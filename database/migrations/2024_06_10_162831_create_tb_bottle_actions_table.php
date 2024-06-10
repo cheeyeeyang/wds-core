@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('tb_bottle_actions', function (Blueprint $table) {
+            $table->id();
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('tb_users')->onDelete('cascade');
+            $table->integer('action_id')->unsigned()->nullable();
+            $table->foreign('action_id')->references('id')->on('tb_actions')->onDelete('cascade');
+            $table->integer('amount')->nullable();
+            // $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('tb_bottle_actions');
+    }
+};
