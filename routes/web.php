@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::get('/', App\Livewire\Admin\DashboardComponent::class)->name('admin.dashboard');
+Route::get('/login', App\Livewire\Admin\LoginComponent::class)->name('admin.login');
 Route::get('/manage-basic-information', App\Livewire\Admin\ManageBasic\ManageBasicInfromatComponent::class)->name('admin.manage_basic_formation');
 Route::get('/burk-pays-water-payment', App\Livewire\Admin\ModulBurkPayWater\BurkPaysWaterPaymentComponent::class)->name('admin.burk_pay_water_payment');
 Route::get('/sell-factory-page', App\Livewire\Admin\SellFactoryPage\SellFactoryPageComponent::class)->name('admin.sell_factory_page');

@@ -106,8 +106,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('admin.expense') }}" class="nav-link">
-                            <i class="fa fa-sign-in text-white" aria-hidden="true"></i>
+                        <a href="{{ route('admin.login') }}" class="nav-link">
+                            <i class="fa fa-sign-out text-white" aria-hidden="true"></i>
                             <p class="text-white">
                                 ອອກຈາກລະບົບ
                             </p>
