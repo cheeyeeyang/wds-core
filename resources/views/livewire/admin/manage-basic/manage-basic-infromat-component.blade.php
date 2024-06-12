@@ -323,7 +323,7 @@
     <div wire:ignore.self class="modal fabe" id="modal-data-products-delete">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-primary">
+                <div class="modal-header bg-info">
                     <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
                     <button class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -438,7 +438,7 @@
     <div wire:ignore.self class="modal fabe" id="modal-data-units-delete">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-info">
                     <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
                     <button class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -477,10 +477,14 @@
                                     <div class="card-body">
                                         <form>
                                             <div class="row">
+                                                <input type="hidden" wire:model="hiidenId_position" hidden="{{$hiidenId_position}}">
                                                 <div class="col-md-12">
-                                                    <label>ຊື່ຕຳແໜ່ງ</label>
+                                                    <label>ຊື່ຕຳແໜ່ງ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ຊື່ຕຳແໜ່ງ">
+                                                        <input wire:model="name_positon" type="text" class="form-control @error('name_positon') is-invalid @enderror" placeholder="ຊື່ຕຳແໜ່ງ">
+                                                        @error('name_positon')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -488,8 +492,8 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button type="button" class="btn btn-primary">ຣີເຊັດ</button>
-                                            <button type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
+                                            <button wire:click="resetFiled_position()" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
+                                            <button wire:click="Store_position()" type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
                                         </div>
                                     </div>
                                 </div>
@@ -502,7 +506,7 @@
                                                 <h6><b>ຂໍ້ມູນຕຳແໜ່ງ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" placeholder="search...">
+                                                <input wire:model="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -517,16 +521,22 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php $stt = 1; @endphp
+                                                    @foreach($positions as $item)
                                                     <tr class="text-center">
-                                                        <td>01</td>
-                                                        <td>ພະນັກງານຫ້ອງການ</td>
+                                                        <td>{{$stt++}}</td>
+                                                        <td>{{$item->name}}</td>
                                                         <td>
-                                                            <a href="" class="mr-3"><i class="fa fa-edit"></i> edit</a>
-                                                            <a href="" class=""><i class="fa fa-trash text-red"></i> delete</a>
+                                                            <a href="#" wire:click="showEditPosition( '{{$item->id}}' )" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
+                                                            <a href="#" wire:click="showDetoryPosition(' {{$item->id}} ')" class="text-red"><i class="fa fa-trash"></i> ລືບ</a>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
+                                            <div class="float-center">
+                                                {{ $positions->links() }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -537,6 +547,28 @@
             </div>
         </div>
     </div>
+    <!-- show-delete ຂໍ້ມູນຕຳແໜ່ງ -->
+    <div wire:ignore.self class="modal fabe" id="modal-data-position-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" wire:model="hiidenId_position" hidden="{{$hiidenId_position}}">
+                    <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button wire:click="get_backPosition" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_Position()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- show ຂໍ້ມູນພະນັກງານ -->
     <div wire:ignore.self class="modal fabe" id="modal-data-staff">
         <div class="modal-dialog modal-xl">
@@ -559,23 +591,35 @@
                                         <form>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label>ຊື່ພະນັກງານ</label>
+                                                    <label>ຊື່ພະນັກງານ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ຊື່ພະນັກງານ">
+                                                        <input wire:model="fullname" type="text" class="form-control @error('fullname') is-invalid @enderror" placeholder="ຊື່ພະນັກງານ">
+                                                        @error('fullname')
+                                                        <span class="error text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <label>ເບີໂທ</label>
+                                                    <label>ເບີໂທ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ເບີໂທ">
+                                                        <input wire:model="phone" type="text" class="form-control @error('phone') is-invalid @enderror" placeholder="ເບີໂທ">
+                                                        @error('phone')
+                                                        <span class="error text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <label for="">ຕຳແໜ່ງ</label>
+                                                    <label for="">ຕຳແໜ່ງ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <select name="" id="" class="form-control">
+                                                        <select wire:model="position_id" name="" id="" class="form-control @error('position_id') is-invalid @enderror">
                                                             <option value="">ເລືອກຕຳແໜ່ງ</option>
+                                                            @foreach($selectPositons as $position)
+                                                            <option value="{{$position->id}}">{{ $position->name }}</option>
+                                                            @endforeach
                                                         </select>
+                                                        @error('position_id')
+                                                        <span class="error text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -583,8 +627,8 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button type="button" class="btn btn-primary">ຣີເຊັດ</button>
-                                            <button type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
+                                            <button wire:click="resetFiledStaff()" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
+                                            <button wire:click="Store_Staff()" type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
                                         </div>
                                     </div>
                                 </div>
@@ -597,7 +641,7 @@
                                                 <h6><b>ຂໍ້ມູນພະນັກງານ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" placeholder="search...">
+                                                <input wire:model="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -614,18 +658,26 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php $i = 1;@endphp
+                                                    @foreach($employees as $items)
                                                     <tr class="text-center">
-                                                        <td>01</td>
-                                                        <td>shia yang</td>
-                                                        <td>020 59143473</td>
-                                                        <td>Google.com</td>
+                                                        <td>{{$i++}}</td>
+                                                        <td>{{$items->fullname}}</td>
+                                                        <td>{{$items->phone}}</td>
                                                         <td>
-                                                            <a href="" class="mr-3"><i class="fa fa-edit"></i> edit</a>
-                                                            <a href="" class=""><i class="fa fa-trash text-red"></i> delete</a>
+                                                            {{!empty($items->positionname->name) ? $items->positionname->name : ''}}
+                                                        </td>
+                                                        <td>
+                                                            <a href="#" wire:click="showEditEmplyee(' {{$items->id}} ')" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
+                                                            <a href="#" wire:click="showDetory_emplyee(' {{$items->id}} ')" class="text-red"><i class="fa fa-trash "></i> ລືບ</a>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
+
+                                            {{$employees->links()}}
+
                                         </div>
                                     </div>
                                 </div>
@@ -636,6 +688,28 @@
             </div>
         </div>
     </div>
+    <!-- show-delete ຂໍ້ມູນພະນັກງານ -->
+    <div wire:ignore.self class="modal fabe" id="modal-data-staff-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" wire:model="hiidenId_staff" hidden="{{$hiidenId_staff}}">
+                    <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button wire:click="get_backEmployee()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_Employee()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- show ຂໍ້ມູນສາຂາ ແລະ ລູກຄ້າປະຈຳ -->
     <div wire:ignore.self class="modal fabe" id="modal-data-branch-regular-customer">
         <div class="modal-dialog modal-xl">
@@ -657,30 +731,44 @@
                                     <div class="card-body">
                                         <form>
                                             <div class="row">
+                                                <input type="hidden" wire:model="hiidenId_branch" value="{{$hiidenId_branch}}">
                                                 <div class="col-md-12">
-                                                    <label>ຊື່ ແລະ ນາມສະກຸມ</label>
+                                                    <label>ຊື່ ແລະ ນາມສະກຸມ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ຊື່ ແລະ ນາມສະກຸມ">
+                                                        <input wire:model="fullname_branch" type="text" class="form-control @error('fullname_branch') is-invalid @enderror" placeholder="ຊື່ ແລະ ນາມສະກຸມ">
+                                                       @error('fullname_branch')
+                                                       <span class="error text-danger">{{$message}}</span>
+                                                       @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <label>ເບີໂທ</label>
+                                                    <label>ເບີໂທ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ເບີໂທ">
+                                                        <input wire:model="phone_branch" type="text" class="form-control @error('phone_branch') is-invalid @enderror" placeholder="ເບີໂທ">
+                                                        @error('phone_branch')
+                                                       <span class="error text-danger">{{$message}}</span>
+                                                       @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <label for="">ລາຄາ</label>
+                                                    <label for="">ລາຄາ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <select name="" id="" class="form-control">
+                                                        <select wire:model="price_id" name="" id="" class="form-control @error('price_id') is-invalid @enderror">
                                                             <option value="">ເລືອກລາຄາ</option>
+                                                            @foreach($data_price as $priceValue)
+                                                            <option value="{{$priceValue->id}}">{{$priceValue->price}}</option>
+                                                            @endforeach
                                                         </select>
+                                                        @error('price_id')
+                                                       <span class="error text-danger">{{$message}}</span>
+                                                       @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label>ລາຍລະອຽດ</label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ລາຍລະອຽດ">
+                                                        <textarea wire:model="details_branch" name="" id="" role="4" class="form-control">
+                                                        </textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -688,8 +776,8 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button type="button" class="btn btn-primary">ຣີເຊັດ</button>
-                                            <button type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
+                                            <button wire:click="resetFiledBranches()" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
+                                            <button wire:click="Store_Branches()" type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
                                         </div>
                                     </div>
                                 </div>
@@ -702,7 +790,7 @@
                                                 <h6><b>ຂໍ້ມູນສາຂາ ແລະ ລູກຄ້າປະຈຳ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" placeholder="search...">
+                                                <input wire:model="search" type="text" class="form-control" placeholder="ຄົ້ນຫາ...">
                                             </div>
                                         </div>
                                     </div>
@@ -720,17 +808,21 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php $i = 1;
+                                                    @endphp
+                                                    @foreach($branches as $item)
                                                     <tr class="text-center">
-                                                        <td>01</td>
-                                                        <td>shia yang</td>
-                                                        <td>020 59143473</td>
-                                                        <td>120,000,000</td>
-                                                        <td>ສາຂາຮັບໄປຂາຍ</td>
+                                                        <td>{{$i++}}</td>
+                                                        <td>{{$item->fullname}}</td>
+                                                        <td>{{$item->phone}}</td>
+                                                        <td>{{!empty(number_format($item->pricename->price) ? $item->pricename->price : '')}}</td>
+                                                        <td>{{$item->detail}}</td>
                                                         <td>
-                                                            <a href="" class="mr-3"><i class="fa fa-edit"></i> edit</a>
-                                                            <a href="" class=""><i class="fa fa-trash text-red"></i> delete</a>
+                                                            <a href="#" class="mr-3"><i class="fa fa-edit"></i> edit</a>
+                                                            <a href="#" class=""><i class="fa fa-trash text-red"></i> delete</a>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
                                         </div>
@@ -743,6 +835,28 @@
             </div>
         </div>
     </div>
+    <!-- show-delete ຂໍ້ມູນສາຂາ ແລະ ລູກຄ້າປະຈຳ -->
+    <div wire:ignore.self class="modal fabe" id="modal-data-branch-regular-customer-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" wire:model="hiidenId_staff" hidden="{{$hiidenId_staff}}">
+                    <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button wire:click="get_backEmployee()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_Employee()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- show ຂໍ້ມູນລາຄາ -->
     <div wire:ignore.self class="modal fabe" id="modal-data-price">
         <div class="modal-dialog modal-xl">
@@ -1680,8 +1794,8 @@
     window.addEventListener('hide-modal-data-products', event => {
         $('#modal-data-products').modal('hide');
     })
-     // delete ຂໍ້ມູນສິນຄ້າ
-     window.addEventListener('show-modal-data-products-delete', event => {
+    // delete ຂໍ້ມູນສິນຄ້າ
+    window.addEventListener('show-modal-data-products-delete', event => {
         $('#modal-data-products-delete').modal('show');
     })
     window.addEventListener('hide-modal-data-products-delete', event => {
@@ -1703,27 +1817,51 @@
         $('#modal-data-units-delete').modal('hide');
     })
 
-    // ຂໍ້ມູນຕຳແໜ່ງ
+    // add ຂໍ້ມູນຕຳແໜ່ງ
     window.addEventListener('show-modal-data-position', event => {
         $('#modal-data-position').modal('show');
     })
     window.addEventListener('hide-modal-data-position', event => {
         $('#modal-data-position').modal('hide');
     })
-    // ຂໍ້ມູນພະນັກງານ
+    window.addEventListener('show-modal-data-position-delete', event => {
+        $('#modal-data-position-delete').modal('show');
+    })
+    window.addEventListener('hide-modal-data-position-delete', event => {
+        $('#modal-data-position-delete').modal('hide');
+    })
+    // end ຂໍ້ມູນຕຳແໜ່ງ
+
+    // add ຂໍ້ມູນພະນັກງານ
     window.addEventListener('show-modal-data-staff', event => {
         $('#modal-data-staff').modal('show');
     })
     window.addEventListener('hide-modal-data-staff', event => {
         $('#modal-data-staff').modal('hide');
     })
-    // ຂໍ້ມູນສາຂາ ແລະ ລູກຄ້າປະຈຳ
+     // ຂໍ້ມູນພະນັກງານ
+     window.addEventListener('show-modal-data-staff-delete', event => {
+        $('#modal-data-staff-delete').modal('show');
+    })
+    window.addEventListener('hide-modal-data-staff-delete', event => {
+        $('#modal-data-staff-delete').modal('hide');
+    })
+    // end ຂໍ້ມູນພະນັກງານ
+
+    // add ຂໍ້ມູນສາຂາ ແລະ ລູກຄ້າປະຈຳ
     window.addEventListener('show-modal-data-branch-regular-customer', event => {
         $('#modal-data-branch-regular-customer').modal('show');
     })
     window.addEventListener('hide-modal-data-branch-regular-customer', event => {
         $('#modal-data-branch-regular-customer').modal('hide');
     })
+    window.addEventListener('show-modal-data-branch-regular-customer-delete', event => {
+        $('#modal-data-branch-regular-customer-delete').modal('show');
+    })
+    window.addEventListener('hide-modal-data-branch-regular-customer-delete', event => {
+        $('#modal-data-branch-regular-customer-delete').modal('hide');
+    })
+    // end ຂໍ້ມູນສາຂາ ແລະ ລູກຄ້າປະຈຳ
     // ຂໍ້ມູນລາຄາ
     window.addEventListener('show-modal-data-price', event => {
         $('#modal-data-price').modal('show');

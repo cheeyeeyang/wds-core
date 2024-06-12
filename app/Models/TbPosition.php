@@ -9,4 +9,5 @@ class TbPosition extends Model
 {
     use HasFactory;
     protected $table = 'tb_positions';
+    protected $fillable = ['id','name'];
 }

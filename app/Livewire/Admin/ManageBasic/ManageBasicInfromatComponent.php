@@ -2,6 +2,10 @@
 
 namespace App\Livewire\Admin\ManageBasic;
 
+use App\Models\TbBranch;
+use App\Models\TbEmployee;
+use App\Models\TbPosition;
+use App\Models\TbPrice;
 use App\Models\TbProduct;
 use App\Models\TbUnit;
 use Illuminate\Support\Facades\DB;
@@ -15,21 +19,51 @@ class ManageBasicInfromatComponent extends Component
     public $search;
     public $barcode, $hiidenId_product, $product_name, $unit_id, $price_cost;
     public $name_units, $hiidenId_units;
+    public $name_positon, $hiidenId_position;
+    public $fullname, $phone, $position_id, $hiidenId_staff;
+    public $fullname_branch, $phone_branch, $price_id, $details_branch, $hiidenId_branch;
     public function render()
     {
         $search = $this->search;
 
+        $selectUnits = TbUnit::orderBy('id', 'desc')->get();
+        $selectPositons = TbPosition::orderBy('id', 'desc')->get();
+        $data_price = TbPrice::orderBy('id','desc')->get();
+
         $products = TbProduct::orderBy('id', 'desc')->where(function ($q) {
             $q->where('product_name', 'like', '%' . $this->search . '%');
         })->paginate(8);
-        $selectUnits = TbUnit::orderBy('id', 'desc')->get();
+
         $units = TbUnit::orderBy('id', 'desc')->where(function ($q) {
             $q->where('name', 'like', '%' . $this->search . '%');
         })->paginate(8);
-        return view('livewire.admin.manage-basic.manage-basic-infromat-component', compact('units', 'selectUnits', 'products'))->layout('layouts.base');
+
+        $positions = TbPosition::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('name', 'like', '%' . $this->search . '%');
+        })->paginate(8);
+
+        $employees = TbEmployee::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('fullname', 'like', '%' . $this->search . '%')
+                ->orwhere('phone', 'like', '%' . $this->search . '%');
+        })->paginate(8);
+
+        $branches = TbBranch::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('fullname', 'like', '%' . $this->search . '%')
+                ->orwhere('phone', 'like', '%' . $this->search . '%');
+        })->paginate(8);
+        return view('livewire.admin.manage-basic.manage-basic-infromat-component', compact(
+            'units',
+            'selectUnits',
+            'products',
+            'positions',
+            'selectPositons',
+            'employees',
+            'data_price',
+            'branches',
+        ))->layout('layouts.base');
     }
 
-    // <!-- show ຂໍ້ມູນສິນຄ້າ -->
+    // -- ========= products ========== -- \\
     public function show_DataProducts()
     {
         $this->dispatch('show-modal-data-products');
@@ -115,32 +149,33 @@ class ManageBasicInfromatComponent extends Component
         $this->unit_id = $edit->unit_id;
         $this->price_cost = $edit->price_cost;
     }
-     // <!-- show-delete ຂໍ້ມູນສິນຄ້າ -->
-     public function showDetory_product($id)
-     {
-         $this->dispatch('hide-modal-data-products');
-         $this->dispatch('show-modal-data-products-delete');
-         $show_delete = TbProduct::find($id);
-         $this->hiidenId_product = $id;
-     }
-     // <!-- delete ຂໍ້ມູນສິນຄ້າ -->
-     public function delete_Products()
-     {
-         $id = $this->hiidenId_product;
-         $delete_units = TbProduct::find($id);
-         $delete_units->delete();
-         $this->resetFiledUnits();
-         $this->dispatch('delete');
-         $this->dispatch('hide-modal-data-products-delete');
-         $this->dispatch('show-modal-data-products');
-     }
-     public function get_backproduct()
-     {
-         $this->dispatch('hide-modal-data-products-delete');
-         $this->dispatch('show-modal-data-products');
-     }
+    // <!-- show-delete ຂໍ້ມູນສິນຄ້າ -->
+    public function showDetory_product($id)
+    {
+        $this->dispatch('hide-modal-data-products');
+        $this->dispatch('show-modal-data-products-delete');
+        $show_delete = TbProduct::find($id);
+        $this->hiidenId_product = $id;
+    }
+    // <!-- delete ຂໍ້ມູນສິນຄ້າ -->
+    public function delete_Products()
+    {
+        $id = $this->hiidenId_product;
+        $delete_units = TbProduct::find($id);
+        $delete_units->delete();
+        $this->resetFiledUnits();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-data-products-delete');
+        $this->dispatch('show-modal-data-products');
+    }
+    public function get_backproduct()
+    {
+        $this->dispatch('hide-modal-data-products-delete');
+        $this->dispatch('show-modal-data-products');
+    }
+    // -- ========= end products ========== -- //
 
-    // <!-- show ຂໍ້ມູນຫົວໜ່ອຍ -->
+    // -- ========= units ========== -- \\
     public function show_DataUnits()
     {
         $this->resetFiledUnits();
@@ -225,24 +260,318 @@ class ManageBasicInfromatComponent extends Component
         $this->dispatch('hide-modal-data-units-delete');
         $this->dispatch('show-modal-data-units');
     }
+    // -- ========= end units ========== -- //
 
-    // <!-- show ຂໍ້ມູນຕຳແໜ່ງ -->
+    // -- ========= add position ========== -- //
     public function show_DataPosition()
     {
         $this->dispatch('show-modal-data-position');
     }
+    public function resetFiled_position()
+    {
+        $this->hiidenId_position = '';
+        $this->name_positon = '';
+    }
+    // add-edit ຂໍ້ມູນຕຳແໜ່ງ
+    public function Store_position()
+    {
+        $updateId = $this->hiidenId_position;
 
-    // <!-- show ຂໍ້ມູນພະນັກງານ -->
+        if ($updateId > 0) {
+
+            $this->validate([
+                'name_positon' => 'required',
+            ], [
+                'name_positon.required' => 'ກະລຸນາໃສ່ຊື່ຕຳແໜ່ງກ່ອນ!',
+            ]);
+            try {
+
+                $update_Position = TbPosition::find($updateId);
+                $update_Position->name = $this->name_positon;
+
+                $update_Position->update();
+                $this->resetFiled_position();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'name_positon' => 'required',
+            ], [
+                'name_positon.required' => 'ກະລຸນາໃສ່ຊື່ຕຳແໜ່ງກ່ອນ!',
+            ]);
+            try {
+                $add_Position = new TbPosition();
+                if ($this->name_positon) {
+                    $add_Position->name = $this->name_positon;
+                }
+
+                $add_Position->save();
+                $this->resetFiled_position();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit ຂໍ້ມູນຕຳແໜ່ງ -->
+    public function showEditPosition($ids)
+    {
+        $show_Edit_pos = TbPosition::find($ids);
+        $this->hiidenId_position = $ids;
+        $this->name_positon = $show_Edit_pos->name;
+    }
+    // <!-- show-delete ຂໍ້ມູນຕຳແໜ່ງ -->
+    public function showDetoryPosition($ids)
+    {
+        $this->dispatch('hide-modal-data-position');
+        $this->dispatch('show-modal-data-position-delete');
+        $show_delete = TbPosition::find($ids);
+        $this->hiidenId_position = $ids;
+    }
+    // <!-- delete ຂໍ້ມູນຕຳແໜ່ງ -->
+    public function delete_Position()
+    {
+        $ids = $this->hiidenId_position;
+        $delete_position = TbPosition::find($ids);
+        $delete_position->delete();
+        $this->resetFiled_position();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-data-position-delete');
+        $this->dispatch('show-modal-data-position');
+    }
+    public function get_backPosition()
+    {
+        $this->dispatch('show-modal-data-position');
+        $this->dispatch('hide-modal-data-position-delete');
+    }
+    // -- ========= end position ========== -- //
+
+    // -- ========= add staff ========== -- //
     public function show_DataStaff()
     {
         $this->dispatch('show-modal-data-staff');
     }
+    public function resetFiledStaff()
+    {
+        $this->hiidenId_staff = '';
+        $this->fullname = '';
+        $this->phone = '';
+        $this->position_id = '';
+    }
+    // add-edit ຂໍ້ມູນພະນັກງານ
+    public function Store_Staff()
+    {
+        $updateId = $this->hiidenId_staff;
 
-    // <!-- show ຂໍ້ມູນສາຂາ ແລະ ລູກຄ້າປະຈຳ -->
+        if ($updateId > 0) {
+
+            $this->validate([
+                'fullname' => 'required',
+                'phone' => 'required',
+                'position_id' => 'required',
+            ], [
+                'fullname.required' => 'ກະລຸນາໃສ່ຊື່ພະນັກງານກ່ອນ!',
+                'phone.required' => 'ກະລຸນາໃສ່ເບີໂທກ່ອນ!',
+                'position_id.required' => 'ກະລຸນາເລືອກຕຳແໜ່ງກ່ອນ!',
+            ]);
+            try {
+
+                $update_employee = TbEmployee::find($updateId);
+                $update_employee->fullname = $this->fullname;
+                $update_employee->phone = $this->phone;
+                $update_employee->position_id = $this->position_id;
+
+                $update_employee->update();
+                $this->resetFiledStaff();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'fullname' => 'required',
+                'phone' => 'required',
+                'position_id' => 'required',
+            ], [
+                'fullname.required' => 'ກະລຸນາໃສ່ຊື່ພະນັກງານກ່ອນ!',
+                'phone.required' => 'ກະລຸນາໃສ່ເບີໂທກ່ອນ!',
+                'position_id.required' => 'ກະລຸນາເລືອກຕຳແໜ່ງກ່ອນ!',
+            ]);
+            try {
+                $add_Employee = new TbEmployee();
+                if ($this->fullname) {
+                    $add_Employee->fullname = $this->fullname;
+                }
+                if ($this->phone) {
+                    $add_Employee->phone = $this->phone;
+                }
+                if ($this->position_id) {
+                    $add_Employee->position_id = $this->position_id;
+                }
+
+                $add_Employee->save();
+                $this->resetFiledStaff();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit ຂໍ້ມູນພະນັກງານ -->
+    public function showEditEmplyee($ids)
+    {
+        $show_Edit_employee = TbEmployee::find($ids);
+        $this->hiidenId_staff = $ids;
+        $this->fullname = $show_Edit_employee->fullname;
+        $this->phone = $show_Edit_employee->phone;
+        $this->position_id = $show_Edit_employee->position_id;
+    }
+    // <!-- show-delete ຂໍ້ມູນພະນັກງານ -->
+    public function showDetory_emplyee($ids)
+    {
+        $this->dispatch('hide-modal-data-staff');
+        $this->dispatch('show-modal-data-staff-delete');
+        $show_delete = TbEmployee::find($ids);
+        $this->hiidenId_staff = $ids;
+    }
+    // <!-- delete ຂໍ້ມູນພະນັກງານ -->
+    public function delete_Employee()
+    {
+        $ids = $this->hiidenId_staff;
+        $delete_Employee = TbEmployee::find($ids);
+        $delete_Employee->delete();
+        $this->resetFiled_position();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-data-staff-delete');
+        $this->dispatch('show-modal-data-staff');
+    }
+    public function get_backEmployee()
+    {
+        $this->dispatch('show-modal-data-staff');
+        $this->dispatch('hide-modal-data-staff-delete');
+    }
+     // -- ========= end staff employee ========== -- //
+
+     // -- ========= add custoomer-branch ========== -- //
     public function show_DataBranch_regularCustomer()
     {
         $this->dispatch('show-modal-data-branch-regular-customer');
     }
+     public function resetFiledBranches()
+    {
+        $this->hiidenId_branch = '';
+        $this->fullname_branch = '';
+        $this->phone_branch = '';
+        $this->price_id = '';
+        $this->details_branch = '';
+    }
+    // add-edit ຂໍ້ມູນພະນັກງານ
+    public function Store_Branches()
+    {
+        $updateId = $this->hiidenId_branch;
+
+        if ($updateId > 0) {
+
+            $this->validate([
+                'fullname_branch' => 'required',
+                'phone_branch' => 'required',
+                'price_id' => 'required',
+                // 'details_branch' => 'required',
+            ], [
+                'fullname_branch.required' => 'ກະລຸນາໃສ່ຊື່ພະນັກງານກ່ອນ!',
+                'phone_branch.required' => 'ກະລຸນາໃສ່ເບີໂທກ່ອນ!',
+                'price_id.required' => 'ກະລຸນາເລືອກຕຳແໜ່ງກ່ອນ!',
+                // 'details_branch.required' => 'ກະລຸນາໃສ່ລາຍລະອຽດກ່ອນ!',
+            ]);
+            try {
+
+                $update_branch = TbBranch::find($updateId);
+                $update_branch->fullname = $this->fullname_branch;
+                $update_branch->phone= $this->phone_branch;
+                $update_branch->price_id = $this->price_id;
+                $update_branch->detail = $this->details_branch;
+
+                $update_branch->update();
+                $this->resetFiledBranches();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'fullname_branch' => 'required',
+                'phone_branch' => 'required',
+                'price_id' => 'required',
+                // 'details_branch' => 'required',
+            ], [
+                'fullname_branch.required' => 'ກະລຸນາໃສ່ຊື່ພະນັກງານກ່ອນ!',
+                'phone_branch.required' => 'ກະລຸນາໃສ່ເບີໂທກ່ອນ!',
+                'price_id.required' => 'ກະລຸນາເລືອກຕຳແໜ່ງກ່ອນ!',
+                // 'details_branch.required' => 'ກະລຸນາໃສ່ລາຍລະອຽດກ່ອນ!',
+            ]);
+            try {
+                $add_Branches = new TbBranch();
+                if ($this->fullname_branch) {
+                    $add_Branches->fullname = $this->fullname_branch;
+                }
+                if ($this->phone_branch) {
+                    $add_Branches->phone = $this->phone_branch;
+                }
+                if ($this->price_id) {
+                    $add_Branches->price_id = $this->price_id;
+                }
+                if ($this->details_branch) {
+                    $add_Branches->detail = $this->details_branch;
+                }
+
+                $add_Branches->save();
+                $this->resetFiledBranches();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit ຂໍ້ມູນພະນັກງານ -->
+    public function showEditbranches($ids)
+    {
+        $show_Edit_branch = TbBranch::find($ids);
+        $this->hiidenId_branch = $ids;
+        $this->fullname_branch = $show_Edit_branch->fullname;
+        $this->phone_branch = $show_Edit_branch->phone;
+        $this->price_id = $show_Edit_branch->price_id;
+        $this->details_branch = $show_Edit_branch->detail;
+    }
+    // <!-- show-delete ຂໍ້ມູນພະນັກງານ -->
+    public function showDetory_branches($ids)
+    {
+        $this->dispatch('hide-modal-data-staff');
+        $this->dispatch('show-modal-data-staff-delete');
+        $show_delete = TbBranch::find($ids);
+        $this->hiidenId_branch = $ids;
+    }
+    // <!-- delete ຂໍ້ມູນພະນັກງານ -->
+    public function delete_Branches()
+    {
+        $ids = $this->hiidenId_branch;
+        $delete_Branches = TbBranch::find($ids);
+        $delete_Branches->delete();
+        $this->resetFiled_position();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-data-staff-delete');
+        $this->dispatch('show-modal-data-staff');
+    }
+    public function get_backBranches()
+    {
+        $this->dispatch('show-modal-data-staff');
+        $this->dispatch('hide-modal-data-staff-delete');
+    }
+     // -- ========= end customer-branch ========== -- //
 
     // <!-- show ຂໍ້ມູນລາຄາ -->
     public function show_DataPrice()

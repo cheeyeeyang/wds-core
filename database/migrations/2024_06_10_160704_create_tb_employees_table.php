@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tb_employees', function (Blueprint $table) {
-           //$table->id();
-            $table->string('em_id')->primary();
+           $table->id();
+            // $table->integer('em_id')->primary();
             $table->string('fullname')->nullable();
             $table->string('phone', 20)->nullable();
             $table->integer('position_id')->unsigned()->nullable();
