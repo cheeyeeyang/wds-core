@@ -9,4 +9,5 @@ class TbUnit extends Model
 {
     use HasFactory;
     protected $table = 'tb_units';
+    protected $fillable = ['id','name'];
 }

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('out_amount')->nullable();
             $table->integer('int_amount')->nullable();
             $table->integer('return_amount')->nullable();
-            //$table->timestamps();
+            $table->timestamps();
         });
     }
 

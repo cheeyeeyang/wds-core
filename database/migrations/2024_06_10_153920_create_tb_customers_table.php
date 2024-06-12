@@ -27,7 +27,7 @@ return new class extends Migration
             $table->integer('user_waterline_id')->unsigned()->nullable();
             $table->foreign('user_waterline_id')->references('id')->on('tb_water_lines')->onDelete('cascade');
             $table->string('remark')->nullable();
-            //$table->timestamps();
+            $table->timestamps();
         });
     }
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('detail')->nullable();
             $table->integer('customer_id')->unsigned()->nullable();
             $table->foreign('customer_id')->references('id')->on('tb_customers')->onDelete('cascade');
-            //$table->timestamps();
+            $table->timestamps();
         });
     }
 

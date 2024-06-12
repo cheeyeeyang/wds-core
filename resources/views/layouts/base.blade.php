@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ໂຮງງານນໍ້າດື່ມ</title>
-
+    <link rel="icon" type="image/png" href="{{ asset('logo/LOGO.jpg') }}" />
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
@@ -205,6 +205,58 @@
 
     @livewireScripts
     @include('layouts.script-sweet-alert')
+
+    <script>
+        $(function() {
+
+            // Summernote
+            //$('#summernote').summernote()
+
+            $('.select2').select2()
+
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+
+            $("#example1").DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "buttons": ["excel", "print"]
+                //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            $('#example2').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        window.livewire.on('alert', param => {
+            toastr[param['type']](param['message'], param['type']);
+        });
+    </script>
+
+    <script type="text/javascript">
+        @if(Session::has('success'))
+        toastr.options.positionClass = 'toast-bottom-right';
+        toastr.success("{{Session::get('success')}}")
+        @elseif(Session::has('warning'))
+        toastr.options.positionClass = 'toast-bottom-right';
+        toastr.warning("{{Session::get('warning')}}")
+        @elseif(Session::has('error'))
+        toastr.options.positionClass = 'toast-bottom-right';
+        toastr.error("{{Session::get('error')}}")
+        @endif
+    </script>
 
     <script>
         $(document).ready(function() {

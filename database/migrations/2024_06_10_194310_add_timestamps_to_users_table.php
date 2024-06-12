@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_permissions', function (Blueprint $table) {
-            $table->id();
-            $table->string('permission')->nullable();
-            $table->string('path')->nullable();
-           $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            //
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tb_permissions');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };

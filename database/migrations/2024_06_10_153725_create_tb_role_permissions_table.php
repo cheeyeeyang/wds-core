@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('role_id')->references('id')->on('tb_roles')->onDelete('cascade');
             $table->integer('permission_id')->unsigned()->nullable();
             $table->foreign('permission_id')->references('id')->on('tb_permissions')->onDelete('cascade');
-           // $table->timestamps();
+           $table->timestamps();
         });
     }
 

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('action_id')->unsigned()->nullable();
             $table->foreign('action_id')->references('id')->on('tb_actions')->onDelete('cascade');
             $table->integer('amount')->nullable();
-            // $table->timestamps();
+            $table->timestamps();
         });
     }
 

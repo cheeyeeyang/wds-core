@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('user_id')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('tb_users')->onDelete('cascade');
             $table->integer('amount')->nullable();
-            //$table->timestamps();
+            $table->timestamps();
         });
     }
 

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('phone', 20)->nullable();
             $table->integer('position_id')->unsigned()->nullable();
             $table->foreign('position_id')->references('id')->on('tb_positions')->onDelete('cascade');
-            //$table->timestamps();
+            $table->timestamps();
         });
     }
 

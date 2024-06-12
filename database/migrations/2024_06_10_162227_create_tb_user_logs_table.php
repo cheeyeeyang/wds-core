@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('tb_users')->onDelete('cascade');
             $table->string('log')->nullable();
             $table->timestamp('date')->useCurrent();
-            // $table->timestamps();
+            $table->timestamps();
         });
     }
 

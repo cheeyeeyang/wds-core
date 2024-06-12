@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('unit_id')->unsigned()->nullable();
             $table->foreign('unit_id')->references('id')->on('tb_units')->onDelete('cascade');
             $table->integer('price_cost')->nullable();
-           // $table->timestamps();
+           $table->timestamps();
         });
     }
 

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('criteria')->nullable();
             $table->integer('score')->nullable();
-           // $table->timestamps();
+           $table->timestamps();
         });
     }
 

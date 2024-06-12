@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('customer_id')->references('id')->on('tb_customers')->onDelete('cascade');
             $table->string('message')->nullable();
             $table->integer('notification')->nullable();
-            //$table->timestamps();
+            $table->timestamps();
         });
     }
 

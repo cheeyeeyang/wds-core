@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('village_name')->nullable();
             $table->integer('district_id')->unsigned()->nullable();
             $table->foreign('district_id')->references('id')->on('tb_districts')->onDelete('cascade');
-            // $table->timestamps();
+            $table->timestamps();
         });
     }
 

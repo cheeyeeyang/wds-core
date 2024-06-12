@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('customer_id')->references('id')->on('tb_customers')->onDelete('cascade');
             $table->timestamp('datetime')->useCurrent();
             $table->integer('total_score')->nullable();
-            //$table->timestamps();
+            $table->timestamps();
         });
     }
 

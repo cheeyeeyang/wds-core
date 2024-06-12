@@ -1,7 +1,7 @@
 <div>
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar elevation-4" style="background-color: dodgerblue;" <!-- Brand Logo -->
-        <a href="#" class="brand-link">
+        <a href="{{ route('admin.dashboard') }}" class="brand-link">
             <img src="{{ asset('logo\LOGO.jpg') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: 15">
             <span class="brand-text text-white">ໂຮງງານນໍ້າດື່ມ</span>
         </a>
@@ -106,7 +106,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('admin.login') }}" class="nav-link">
+                        <a href="#" class="nav-link">
                             <i class="fa fa-sign-out text-white" aria-hidden="true"></i>
                             <p class="text-white">
                                 ອອກຈາກລະບົບ
