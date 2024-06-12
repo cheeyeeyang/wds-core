@@ -23,7 +23,7 @@
     <!-- Select2 -->
     <link rel="stylesheet" href="{{asset('admin/plugins/select2/css/select2.min.css')}}">
     <link rel="stylesheet" href="{{asset('admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
-     <link rel="alternate" href="{{asset('admin/build/scss/pages/_login_and_register.scss')}}">
+    <link rel="alternate" href="{{asset('admin/build/scss/pages/_login_and_register.scss')}}">
 
     <style>
         nav svg {
@@ -40,7 +40,7 @@
     @livewireStyles
 </head>
 
-<body class="hold-transition login-page" style="font-family: 'Nuanta-Regular'">
+<body class="hold-transition login-page" style="font-family: 'Nuanta-Regular';background: linear-gradient(to bottom,#226FB7, #0D9ADE);">
     {{ $slot }}
     <!-- jQuery -->
     <script src="{{ asset('admin/plugins/jquery/jquery.min.js')}}"></script>
@@ -57,6 +57,8 @@
     <script src="{{asset('admin/plugins/sweetalert2/sweetalert2.min.js')}}"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     @livewireScripts
+    @include('layouts.script-sweet-alert')
+    @stack('scripts')
 </body>
 
 </html>

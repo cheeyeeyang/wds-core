@@ -34,6 +34,23 @@
             height: 20px;
         }
 
+        .nav-item p,
+        .nav-item i {
+            color: #fff;
+        }
+
+        .nav-item.actives {
+            margin-left: -10px;
+            margin-right: -10px;
+            background-color: #fff;
+        }
+
+        .nav-item.actives p,
+        .nav-item.actives i {
+            color: #2270B8;
+        }
+
+
         @font-face {
             font-family: Nuanta-Regular;
             src: url("{{ asset('fonts/Nuanta-Regular.ttf') }}");
@@ -58,10 +75,6 @@
             <ul class="navbar-nav ml-auto">
                 <!-- Messages Dropdown Menu -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="far fa-comments"></i>
-                        <span class="badge badge-danger navbar-badge">3</span>
-                    </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                         <a href="#" class="dropdown-item">
                             <!-- Message Start -->
@@ -194,7 +207,6 @@
     <!-- AdminLTE App -->
     <script src="{{asset('admin/dist/js/adminlte.js')}}"></script>
     <!-- AdminLTE for demo purposes -->
-    <script src="{{asset('admin/dist/js/demo.js')}}"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{{asset('admin/dist/js/pages/dashboard.js')}}"></script>
     <!-- script sweet alert -->

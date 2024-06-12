@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\UserLogin;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -11,9 +12,8 @@ Route::get('localization/{local}', function ($local) {
     return back();
 });
 Route::get('/', App\Livewire\Admin\LoginComponent::class)->name('admin.login');
-
-Route::group(['middleware' => 'auth'], function () {
-
+Route::group(['middleware' => 'user_login'], function () {
+    Route::post('/logout', App\Livewire\Admin\LoginComponent::class, 'logout')->name('admin.logout');
     Route::get('/dashboard', App\Livewire\Admin\DashboardComponent::class)->name('admin.dashboard');
     Route::get('/manage-basic-information', App\Livewire\Admin\ManageBasic\ManageBasicInfromatComponent::class)->name('admin.manage_basic_formation');
     Route::get('/burk-pays-water-payment', App\Livewire\Admin\ModulBurkPayWater\BurkPaysWaterPaymentComponent::class)->name('admin.burk_pay_water_payment');

@@ -1,5 +1,18 @@
 {{-- =================================== add ======================================= --}}
 <script>
+  document.addEventListener('success', function(e) {
+    Swal.fire({
+      title: "ສໍາເລັດແລ້ວ",
+      icon: "success",
+      iconColor: 'success',
+      timer: 3000,
+      toast: true,
+      position: 'top-right',
+      showConfirmButton: false,
+    });
+  });
+</script>
+<script>
   document.addEventListener('add', function(e) {
     Swal.fire({
       title: "@lang('ເພີ່ມຂໍ້ມູນສຳເລັດ')",
@@ -60,7 +73,7 @@
     Swal.fire({
       title: "@lang('ເປີດອະນຸມັດສຳເລັດ')",
       icon: "success",
-      iconColor:  'success',
+      iconColor: 'success',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -74,7 +87,7 @@
     Swal.fire({
       title: "@lang('ປີດອະນຸມັດສຳເລັດ')",
       icon: "success",
-      iconColor:  'success',
+      iconColor: 'success',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -86,9 +99,9 @@
 <script>
   document.addEventListener('wrong_password', function(e) {
     Swal.fire({
-      title: "@lang('lang.wrong_password')",
+      title: "ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດບໍ່ຖືກຕ້ອງ",
       icon: "error",
-      iconColor:  'danger',
+      iconColor: 'danger',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -102,7 +115,7 @@
     Swal.fire({
       title: "@lang('lang.password_not_match')",
       icon: "warning",
-      iconColor:  'danger',
+      iconColor: 'danger',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -116,7 +129,7 @@
     Swal.fire({
       title: '@lang("lang.already_data")',
       icon: "error",
-      iconColor:  'danger',
+      iconColor: 'danger',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -130,7 +143,7 @@
     Swal.fire({
       title: '@lang("lang.The_start_time_must_be_less_than_the_end_time")',
       icon: "error",
-      iconColor:  'danger',
+      iconColor: 'danger',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -144,7 +157,7 @@
     Swal.fire({
       title: '@lang("lang.logout_success")',
       icon: "success",
-      iconColor:  'success',
+      iconColor: 'success',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -158,7 +171,7 @@
     Swal.fire({
       title: '@lang("lang.login_success")',
       icon: "success",
-      iconColor:  'success',
+      iconColor: 'success',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -172,7 +185,7 @@
     Swal.fire({
       title: '@lang("lang.transaction_success")',
       icon: "success",
-      iconColor:  'success',
+      iconColor: 'success',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -186,7 +199,7 @@
     Swal.fire({
       title: '@lang("lang.alert_success")',
       icon: "success",
-      iconColor:  'success',
+      iconColor: 'success',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -215,7 +228,7 @@
     Swal.fire({
       title: '@lang("lang.add_more_then_price")',
       icon: "warning",
-      iconColor:  'warning',
+      iconColor: 'warning',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -229,7 +242,7 @@
     Swal.fire({
       title: '@lang("lang.please_choose_car")',
       icon: "warning",
-      iconColor:  'warning',
+      iconColor: 'warning',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -243,7 +256,7 @@
     Swal.fire({
       title: '@lang("lang.this_car_is_not_empty")',
       icon: "warning",
-      iconColor:  'warning',
+      iconColor: 'warning',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -257,7 +270,7 @@
     Swal.fire({
       title: '@lang("lang.please_select_data")',
       icon: "warning",
-      iconColor:  'warning',
+      iconColor: 'warning',
       timer: 3000,
       toast: true,
       position: 'top-right',
@@ -271,7 +284,7 @@
     Swal.fire({
       title: '@lang("lang.you_are_not_driver")',
       icon: "warning",
-      iconColor:  'warning',
+      iconColor: 'warning',
       timer: 3000,
       toast: true,
       position: 'top-right',
