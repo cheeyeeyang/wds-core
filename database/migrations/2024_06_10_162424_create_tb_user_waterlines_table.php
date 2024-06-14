@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('employee_id')->references('id')->on('tb_employees')->onDelete('cascade');
             $table->integer('waterline_id')->unsigned()->nullable();
             $table->foreign('waterline_id')->references('id')->on('tb_water_lines')->onDelete('cascade');
+            $table->string('des')->nullable();
             $table->timestamps();
         });
     }

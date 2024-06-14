@@ -12,31 +12,34 @@ class LoginComponent extends Component
     {
         return view('livewire.admin.login-component')->layout('layouts.login');
     }
-
+    protected $rules = [
+        'username' => 'required',
+        'password' => 'required',
+    ];
+    protected $messages = [
+        'username.required' => 'ໃສ່ຊື່ຜູ້ໃຊ້ກ່ອນ!',
+        'password.required' => 'ໃສ່ລະຫັດຜ່ານກ່ອນ!',
+    ];
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
     public function login()
     {
+        $this->validate();
         if (Auth::attempt(['username' => $this->username, 'password' => $this->password])) {
-            session()->flash('success', 'ເຂົ້າລະບົບສຳເລັດ');
-
-            // Clear input values after successful login
             $this->username = "";
             $this->password = "";
-
-            // Check for intended URL and redirect accordingly
-            if (session()->has('url.intended')) {
-                return redirect(session()->get('url.intended'));
-            } else {
-                return redirect()->route('admin.dashboard');
-            }
+            $this->dispatch('success');
+            return redirect()->route('admin.dashboard');
         } else {
-            $this->dispatch('something_went_wrong');
-            session()->flash('error', 'ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ');
-
-            // Clear input values after failed login attempt
-            $this->username = "";
-            $this->password = "";
-
-            return redirect()->route('admin.login');
+            $this->dispatch('wrong_password');
         }
+    }
+    public function logout()
+    {
+        Auth::logout();
+        $this->dispatch('success');
+        return redirect()->route('admin.login');
     }
 }

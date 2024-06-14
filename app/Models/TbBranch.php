@@ -11,8 +11,8 @@ class TbBranch extends Model
     protected $table = 'tb_branches';
     protected $fillable = ['id','fullname','phone','price_id','detail'];
 
-    public function positionname()
+    public function pricename()
     {
-        return $this->belongsTo('App\Models\TbPosition', 'position_id ', 'id');
+        return $this->belongsTo('App\Models\TbPrice', 'price_id ', 'id');
     }
 }

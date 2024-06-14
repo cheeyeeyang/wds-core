@@ -3,11 +3,14 @@
 namespace App\Livewire\Admin\ManageBasic;
 
 use App\Models\TbBranch;
+use App\Models\TbCustomer;
 use App\Models\TbEmployee;
 use App\Models\TbPosition;
 use App\Models\TbPrice;
 use App\Models\TbProduct;
 use App\Models\TbUnit;
+use App\Models\TbUserWaterline;
+use App\Models\TbWaterLine;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -22,13 +25,23 @@ class ManageBasicInfromatComponent extends Component
     public $name_positon, $hiidenId_position;
     public $fullname, $phone, $position_id, $hiidenId_staff;
     public $fullname_branch, $phone_branch, $price_id, $details_branch, $hiidenId_branch;
+    public $price_product_id, $price_name, $productId_price, $hiidenId_price;
+    public $cus_name, $cus_alley, $cus_villId, $cus_h_number, $cus_phone,
+        $cus_b_amount, $cus_priceId, $cus_lat, $cus_lng, $cus_user_waterlineId,
+        $cus_remark, $hiidenId_customer, $search_waterlineId;
+    public $waterline_name, $hiddenId_waterline;
+    public $userwaterline_employeeId, $waterline_waterlineId,$search_UwateremployeeId, $hiddenId_userwaterline;
     public function render()
     {
         $search = $this->search;
 
         $selectUnits = TbUnit::orderBy('id', 'desc')->get();
         $selectPositons = TbPosition::orderBy('id', 'desc')->get();
-        $data_price = TbPrice::orderBy('id','desc')->get();
+        $data_price = TbPrice::orderBy('id', 'desc')->get();
+        $data_product = TbProduct::orderBy('id', 'desc')->get();
+        $data_userswaterlines = TbUserWaterline::orderBy('id', 'desc')->get();
+        $data_waterlines = TbWaterLine::orderBy('id', 'desc')->get();
+        $data_employees = TbEmployee::orderBy('id', 'desc')->get();
 
         $products = TbProduct::orderBy('id', 'desc')->where(function ($q) {
             $q->where('product_name', 'like', '%' . $this->search . '%');
@@ -51,6 +64,52 @@ class ManageBasicInfromatComponent extends Component
             $q->where('fullname', 'like', '%' . $this->search . '%')
                 ->orwhere('phone', 'like', '%' . $this->search . '%');
         })->paginate(8);
+
+        $prices = TbPrice::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('price', 'like', '%' . $this->search . '%');
+            // ->orwhere('', 'like', '%' . $this->search . '%');
+        });
+
+        if ($this->productId_price) {
+            $prices = $prices->where('product_id', $this->productId_price);
+        }
+        if (!empty($prices)) {
+            $prices = $prices->paginate(8);
+        } else {
+            $prices = [];
+        }
+
+        $customers = TbCustomer::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('customer_name', 'like', '%' . $this->search . '%')
+                ->orwhere('phone', 'like', '%' . $this->search . '%')
+                ->where('alley', 'like', '%' . $this->search . '%')
+                ->where('code', 'like', '%' . $this->search . '%');
+        });
+
+        if ($this->search_waterlineId) {
+            $customers = $customers->where('user_waterline_id', $this->search_waterlineId);
+        }
+
+        if (!empty($customers)) {
+            $customers = $customers->paginate(8);
+        } else {
+            $customers = [];
+        }
+
+        $waterlines = TbWaterLine::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('name', 'like', '%' . $this->search . '%');
+        })->paginate(8);
+
+        $userwaterlines = TbUserWaterline::orderBy('id', 'desc');
+
+        if($this->search_UwateremployeeId){
+            $userwaterlines = $userwaterlines->where('employee_id', $this->search_UwateremployeeId);
+        }
+        if(!empty($userwaterlines)){
+            $userwaterlines = $userwaterlines->paginate(8);
+        }else{
+            $userwaterlines = [];
+        }
         return view('livewire.admin.manage-basic.manage-basic-infromat-component', compact(
             'units',
             'selectUnits',
@@ -60,8 +119,21 @@ class ManageBasicInfromatComponent extends Component
             'employees',
             'data_price',
             'branches',
+            'prices',
+            'data_product',
+            'customers',
+            'data_userswaterlines',
+            'waterlines',
+            'data_waterlines',
+            'data_employees',
+            'userwaterlines',
         ))->layout('layouts.base');
     }
+
+    // public function hydrate()
+    // {
+    //     $this->emit('productId_price');
+    // }
 
     // -- ========= products ========== -- \\
     public function show_DataProducts()
@@ -454,14 +526,14 @@ class ManageBasicInfromatComponent extends Component
         $this->dispatch('show-modal-data-staff');
         $this->dispatch('hide-modal-data-staff-delete');
     }
-     // -- ========= end staff employee ========== -- //
+    // -- ========= end staff employee ========== -- //
 
-     // -- ========= add custoomer-branch ========== -- //
+    // -- ========= add custoomer-branch ========== -- //
     public function show_DataBranch_regularCustomer()
     {
         $this->dispatch('show-modal-data-branch-regular-customer');
     }
-     public function resetFiledBranches()
+    public function resetFiledBranches()
     {
         $this->hiidenId_branch = '';
         $this->fullname_branch = '';
@@ -491,7 +563,7 @@ class ManageBasicInfromatComponent extends Component
 
                 $update_branch = TbBranch::find($updateId);
                 $update_branch->fullname = $this->fullname_branch;
-                $update_branch->phone= $this->phone_branch;
+                $update_branch->phone = $this->phone_branch;
                 $update_branch->price_id = $this->price_id;
                 $update_branch->detail = $this->details_branch;
 
@@ -550,8 +622,8 @@ class ManageBasicInfromatComponent extends Component
     // <!-- show-delete ຂໍ້ມູນພະນັກງານ -->
     public function showDetory_branches($ids)
     {
-        $this->dispatch('hide-modal-data-staff');
-        $this->dispatch('show-modal-data-staff-delete');
+        $this->dispatch('hide-modal-data-branch-regular-customer');
+        $this->dispatch('show-modal-data-branch-regular-customer-delete');
         $show_delete = TbBranch::find($ids);
         $this->hiidenId_branch = $ids;
     }
@@ -563,32 +635,481 @@ class ManageBasicInfromatComponent extends Component
         $delete_Branches->delete();
         $this->resetFiled_position();
         $this->dispatch('delete');
-        $this->dispatch('hide-modal-data-staff-delete');
-        $this->dispatch('show-modal-data-staff');
+        $this->dispatch('hide-modal-data-branch-regular-customer-delete');
+        $this->dispatch('show-modal-data-branch-regular-customer');
     }
     public function get_backBranches()
     {
-        $this->dispatch('show-modal-data-staff');
-        $this->dispatch('hide-modal-data-staff-delete');
+        $this->dispatch('show-modal-data-branch-regular-customer');
+        $this->dispatch('hide-modal-data-branch-regular-customer-delete');
     }
-     // -- ========= end customer-branch ========== -- //
+    // -- ========= end customer-branch ========== -- //
 
-    // <!-- show ຂໍ້ມູນລາຄາ -->
+    // -- ========= add prices ========== -- //
     public function show_DataPrice()
     {
         $this->dispatch('show-modal-data-price');
     }
+    public function resetFiledPrice()
+    {
+        $this->hiidenId_price = '';
+        $this->price_product_id = '';
+        $this->price_name = '';
+    }
+    // add-edit price
+    public function Store_Price()
+    {
+        $updateId = $this->hiidenId_price;
 
-    // <!-- show ຂໍ້ມູນລູກຄ້າ -->
+        if ($updateId > 0) {
+
+            $this->validate([
+                'price_name' => 'required',
+                'price_product_id' => 'required',
+                // 'details_branch' => 'required',
+            ], [
+                'price_name.required' => 'ກະລຸນາໃສ່ລາຄາກ່ອນ!',
+                'price_product_id.required' => 'ກະລຸນາເລືອກສິນຄ້າກ່ອນ!',
+                // 'details_branch.required' => 'ກະລຸນາໃສ່ລາຍລະອຽດກ່ອນ!',
+            ]);
+            try {
+
+                $update_price = TbPrice::find($updateId);
+                $update_price->price = str_replace(',', '', $this->price_name);
+                $update_price->product_id = $this->price_product_id;
+
+                $update_price->update();
+                $this->resetFiledPrice();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'price_name' => 'required',
+                'price_product_id' => 'required',
+                // 'details_branch' => 'required',
+            ], [
+                'price_name.required' => 'ກະລຸນາໃສ່ລາຄາກ່ອນ!',
+                'price_product_id.required' => 'ກະລຸນາເລືອກສິນຄ້າກ່ອນ!',
+                // 'details_branch.required' => 'ກະລຸນາໃສ່ລາຍລະອຽດກ່ອນ!',
+            ]);
+            try {
+                $add_Prices = new TbPrice();
+                if (str_replace(',', '', $this->price_name)) {
+                    $add_Prices->price = str_replace(',', '', $this->price_name);
+                }
+                if ($this->price_product_id) {
+                    $add_Prices->product_id = $this->price_product_id;
+                }
+
+                $add_Prices->save();
+                $this->resetFiledPrice();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit price -->
+    public function showEditPrices($ids)
+    {
+        $show_Edit_price = TbPrice::find($ids);
+        $this->hiidenId_price = $ids;
+        $this->price_name = $show_Edit_price->price;
+        $this->price_product_id = $show_Edit_price->product_id;
+    }
+    // <!-- show-delete price -->
+    public function showDetory_Prices($ids)
+    {
+        $this->dispatch('hide-modal-data-price');
+        $this->dispatch('show-modal-data-price-delete');
+        $show_delete = TbPrice::find($ids);
+        $this->hiidenId_price = $ids;
+    }
+    // <!-- delete price -->
+    public function delete_Prices()
+    {
+        $ids = $this->hiidenId_price;
+        $delete_prices = TbPrice::find($ids);
+        $delete_prices->delete();
+        $this->resetFiledPrice();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-data-price-delete');
+        $this->dispatch('show-modal-data-price');
+    }
+    public function get_backPrices()
+    {
+        $this->dispatch('show-modal-data-price');
+        $this->dispatch('hide-modal-data-price-delete');
+    }
+    // -- ========= end price ========== -- //
+
+    // -- ========= add customers ========== -- //
     public function show_DataCustomer()
     {
         $this->dispatch('show-modal-data-customer');
     }
+    public function showAddCustomers()
+    {
+        $this->resetFiledCustomers();
+        $this->dispatch('show-modal-data-customer-add');
+        $this->dispatch('hide-modal-data-customer');
+    }
+    public function getbackAddCustomers()
+    {
+        $this->resetFiledCustomers();
+        $this->dispatch('hide-modal-data-customer-add');
+        $this->dispatch('show-modal-data-customer');
+    }
+    public function resetFiledCustomers()
+    {
+        $this->hiidenId_customer = '';
+        $this->cus_name = '';
+        $this->cus_alley = '';
+        $this->cus_villId = '';
+        $this->cus_h_number = '';
+        $this->cus_phone = '';
+        $this->cus_b_amount = '';
+        $this->cus_priceId = '';
+        $this->cus_lat = '';
+        $this->cus_lng = '';
+        $this->cus_user_waterlineId = '';
+        $this->cus_remark = '';
+    }
+    // add-edit ຂໍ້ມູນພະນັກງານ
+    public function Store_Customers()
+    {
+
+        $this->validate([
+            'cus_phone' => 'required',
+            'cus_name' => 'required',
+            'cus_b_amount' => 'required',
+        ], [
+            'cus_phone.required' => 'ກະລຸນາໃສ່ລາຄາກ່ອນ!',
+            'cus_name.required' => 'ກະລຸນາເລືອກສິນຄ້າກ່ອນ!',
+            'cus_b_amount.required' => 'ກະລຸນາໃສ່ຈຳນວນຕຸກກ່ອນ!',
+            // 'details_branch.required' => 'ກະລຸນາໃສ່ລາຍລະອຽດກ່ອນ!',
+        ]);
+        try {
+            $count_mxe = TbCustomer::count('id');
+            $count = $count_mxe + 1;
+            $add_Customer = new TbCustomer();
+            if (!empty($count_mxe)) {
+                $add_Customer->code = 'C000' . $count;
+            } else {
+                $add_Customer->code = 'C0001';
+            }
+            if ($this->cus_name) {
+                $add_Customer->customer_name = $this->cus_name;
+            }
+            if ($this->cus_phone) {
+                $add_Customer->phone = $this->cus_phone;
+            }
+            if ($this->cus_alley) {
+                $add_Customer->alley = $this->cus_alley;
+            }
+            if ($this->cus_villId) {
+                $add_Customer->village_id = $this->cus_villId;
+            }
+            if ($this->cus_h_number) {
+                $add_Customer->h_number = $this->cus_h_number;
+            }
+            if ($this->cus_b_amount) {
+                $add_Customer->b_amount = $this->cus_b_amount;
+            }
+            if ($this->cus_priceId) {
+                $add_Customer->price_id = $this->cus_priceId;
+            }
+            if ($this->cus_lat) {
+                $add_Customer->lat = $this->cus_lat;
+            }
+            if ($this->cus_lng) {
+                $add_Customer->lng = $this->cus_lng;
+            }
+            if ($this->cus_user_waterlineId) {
+                $add_Customer->user_waterline_id = $this->cus_user_waterlineId;
+            }
+            if ($this->cus_remark) {
+                $add_Customer->remark = $this->cus_remark;
+            }
+
+            $add_Customer->save();
+            $this->resetFiledCustomers();
+            $this->dispatch('add');
+            $this->dispatch('hide-modal-data-customer-add');
+            $this->dispatch('show-modal-data-customer');
+        } catch (\Exception $ex) {
+            $this->dispatch('something_went_wrong');
+        }
+    }
+    // <!-- show-Edit ຂໍ້ມູນພະນັກງານ -->
+    public function showEditCustomers($ids)
+    {
+        $this->dispatch('show-modal-data-customer-add');
+        $this->dispatch('hide-modal-data-customer');
+        $show_Edit_customer = TbCustomer::find($ids);
+        $this->hiidenId_customer = $ids;
+        $this->cus_name = $show_Edit_customer->customer_name;
+        $this->cus_phone = $show_Edit_customer->phone;
+        $this->cus_alley = $show_Edit_customer->alley;
+        $this->cus_h_number = $show_Edit_customer->h_number;
+        $this->cus_b_amount = $show_Edit_customer->b_amount;
+        $this->cus_villId = $show_Edit_customer->village_id;
+        $this->cus_priceId = $show_Edit_customer->price_id;
+        $this->cus_lat = $show_Edit_customer->lat;
+        $this->cus_lng = $show_Edit_customer->lng;
+        $this->cus_user_waterlineId = $show_Edit_customer->user_waterline_id;
+        $this->cus_remark = $show_Edit_customer->remark;
+    }
+    public function EditData_Customers()
+    {
+        $ids = $this->hiidenId_customer;
+
+        $this->validate([
+            'cus_phone' => 'required',
+            'cus_name' => 'required',
+            'cus_b_amount' => 'required',
+            // 'details_branch' => 'required',
+        ], [
+            'cus_phone.required' => 'ກະລຸນາໃສ່ເບີໂທກ່ອນ!',
+            'cus_name.required' => 'ກະລຸນາໃສ່ຊື່ກ່ອນ!',
+            'cus_b_amount.required' => 'ກະລຸນາໃສ່ຈຳນວນຕຸກກ່ອນ!',
+        ]);
+        try {
+
+            $update_customer = TbCustomer::find($ids);
+            $update_customer->customer_name = $this->cus_name;
+            $update_customer->phone = $this->cus_phone;
+            $update_customer->alley = $this->cus_alley;
+            $update_customer->village_id = $this->cus_villId;
+            $update_customer->h_number = $this->cus_h_number;
+            $update_customer->b_amount = $this->cus_b_amount;
+            $update_customer->price_id  = $this->cus_priceId;
+            $update_customer->lat = $this->cus_lat;
+            $update_customer->lng = $this->cus_lng;
+            $update_customer->user_waterline_id  = $this->cus_user_waterlineId;
+            $update_customer->remark  = $this->cus_remark;
+
+            $update_customer->update();
+            $this->resetFiledCustomers();
+            $this->dispatch('edit');
+            $this->dispatch('hide-modal-data-customer-add');
+            $this->dispatch('show-modal-data-customer');
+        } catch (\Exception $e) {
+            $this->dispatch('something_went_wrong');
+        }
+    }
+    // <!-- show-delete ຂໍ້ມູນພະນັກງານ -->
+    public function showDetory_Customers($ids)
+    {
+        $this->dispatch('hide-modal-data-customer');
+        $this->dispatch('show-modal-data-customer-delete');
+        $show_delete = TbCustomer::find($ids);
+        $this->hiidenId_customer = $ids;
+    }
+    // <!-- delete ຂໍ້ມູນພະນັກງານ -->
+    public function delete_Customers()
+    {
+        $ids = $this->hiidenId_customer;
+        $delete_prices = TbCustomer::find($ids);
+        $delete_prices->delete();
+        $this->resetFiledCustomers();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-data-customer-delete');
+        $this->dispatch('show-modal-data-customer');
+    }
+    public function get_backCustomers()
+    {
+        $this->dispatch('show-modal-data-customer');
+        $this->dispatch('hide-modal-data-customer-delete');
+    }
+    // -- ========= end customer ========== -- //
 
     // <!-- show ຂໍ້ມູນສາຍນໍ້າ -->
     public function show_DataWater()
     {
         $this->dispatch('show-modal-data-water');
+    }
+    public function resetFiledWaterline()
+    {
+        $this->hiddenId_waterline = '';
+        $this->waterline_name = '';
+    }
+    // add-edit price
+    public function Store_Waterline()
+    {
+        $updateId = $this->hiddenId_waterline;
+
+        if ($updateId > 0) {
+
+            $this->validate([
+                'waterline_name' => 'required',
+            ], [
+                'waterline_name.required' => 'ກະລຸນາໃສ່ຊື່ກ່ອນ!',
+            ]);
+            try {
+
+                $update_waterline = TbWaterLine::find($updateId);
+                $update_waterline->name = $this->waterline_name;
+
+                $update_waterline->update();
+                $this->resetFiledWaterline();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'waterline_name' => 'required',
+            ], [
+                'waterline_name.required' => 'ກະລຸນາໃສ່ຊື່ກ່ອນ!',
+            ]);
+            try {
+                $add_Waterline = new TbWaterLine();
+                if ($this->waterline_name) {
+                    $add_Waterline->name = $this->waterline_name;
+                }
+
+                $add_Waterline->save();
+                $this->resetFiledWaterline();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit price -->
+    public function showEditWaterline($ids)
+    {
+        $show_Edit_waterline = TbWaterLine::find($ids);
+        $this->hiddenId_waterline = $ids;
+        $this->waterline_name = $show_Edit_waterline->name;
+    }
+    // <!-- show-delete price -->
+    public function showDetory_Waterline($ids)
+    {
+        $this->dispatch('hide-modal-data-water');
+        $this->dispatch('show-modal-data-water-delete');
+        $show_delete = TbWaterLine::find($ids);
+        $this->hiddenId_waterline = $ids;
+    }
+    // <!-- delete price -->
+    public function delete_Waterline()
+    {
+        $ids = $this->hiddenId_waterline;
+        $delete_waterline = TbWaterLine::find($ids);
+        $delete_waterline->delete();
+        $this->resetFiledPrice();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-data-water-delete');
+        $this->dispatch('show-modal-data-water');
+    }
+    public function get_backWaterline()
+    {
+        $this->dispatch('show-modal-data-water');
+        $this->dispatch('hide-modal-data-water-delete');
+    }
+    // -- ========= end ຂໍ້ມູນສາຍນໍ້າ ========== -- //
+
+    // <!-- show ຂໍ້ມູນທີມສົ່ງນໍ້າ -->
+    public function show_DataUserwaterline()
+    {
+        $this->dispatch('show-modal-data-user-waterline');
+    }
+    public function resetFiledUserwaterline()
+    {
+        $this->hiddenId_userwaterline = '';
+        $this->userwaterline_employeeId = '';
+        $this->waterline_waterlineId = '';
+    }
+    // add-edit price
+    public function Store_Userwaterline()
+    {
+        $updateId = $this->hiddenId_userwaterline;
+
+        if ($updateId > 0) {
+
+            $this->validate([
+                'userwaterline_employeeId' => 'required',
+                'waterline_waterlineId' => 'required',
+            ], [
+                'userwaterline_employeeId.required' => 'ກະລຸນາເລືອກພະນັກງານກ່ອນ!',
+                'waterline_waterlineId.required' => 'ກະລຸນາເລືອກສາຍນໍ້າກ່ອນ!',
+            ]);
+
+            try {
+
+                $update_user_waterline = TbUserWaterline::find($updateId);
+                $update_user_waterline->employee_id = $this->userwaterline_employeeId;
+                $update_user_waterline->waterline_id = $this->waterline_waterlineId;
+
+                $update_user_waterline->update();
+                $this->resetFiledUserwaterline();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'userwaterline_employeeId' => 'required',
+                'waterline_waterlineId' => 'required',
+            ], [
+                'userwaterline_employeeId.required' => 'ກະລຸນາເລືອກພະນັກງານກ່ອນ!',
+                'waterline_waterlineId.required' => 'ກະລຸນາເລືອກສາຍນໍ້າກ່ອນ!',
+            ]);
+
+            try {
+                $add_user_Waterline = new TbUserWaterline();
+                if ($this->userwaterline_employeeId) {
+                    $add_user_Waterline->employee_id = $this->userwaterline_employeeId;
+                }
+                if ($this->waterline_waterlineId) {
+                    $add_user_Waterline->waterline_id = $this->waterline_waterlineId;
+                }
+
+                $add_user_Waterline->save();
+                $this->resetFiledUserwaterline();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit price -->
+    public function showEditUserWaterline($ids)
+    {
+        $show_Edit_user_waterline = TbUserWaterline::find($ids);
+        $this->hiddenId_userwaterline = $ids;
+        $this->userwaterline_employeeId = $show_Edit_user_waterline->employee_id;
+        $this->waterline_waterlineId = $show_Edit_user_waterline->waterline_id;
+    }
+    // <!-- show-delete price -->
+    public function showDetory_UserWaterline($ids)
+    {
+        $this->dispatch('hide-modal-data-user-waterline');
+        $this->dispatch('show-modal-data-user-waterline-delete');
+        $show_delete = TbUserWaterline::find($ids);
+        $this->hiddenId_userwaterline = $ids;
+    }
+    // <!-- delete price -->
+    public function delete_UserWaterline()
+    {
+        $ids = $this->hiddenId_userwaterline;
+        $delete_user_waterline = TbUserWaterline::find($ids);
+        $delete_user_waterline->delete();
+        $this->resetFiledPrice();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-data-user-waterline-delete');
+        $this->dispatch('show-modal-data-user-waterline');
+    }
+    public function get_backUserWaterline()
+    {
+        $this->dispatch('show-modal-data-user-waterline');
+        $this->dispatch('hide-modal-data-user-waterline-delete');
     }
 
     // <!-- show ຂໍ້ມູນບ້ານ -->
@@ -596,6 +1117,7 @@ class ManageBasicInfromatComponent extends Component
     {
         $this->dispatch('show-modal-village');
     }
+
 
     // <!-- show ຂໍ້ມູນເມືອງ -->
     public function show_DataDistrict()

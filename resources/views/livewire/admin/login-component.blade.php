@@ -7,13 +7,6 @@
                         <img src="{{ asset('logo/LOGO.jpg') }}" alt="AdminLTE Logo" class=" img-circle elevation-3" height="70">
                     </a>
                 </p>
-
-                @if (session()->has('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-                @endif
-
                 <form wire:submit.prevent="login">
                     <label for="username">Username</label>
                     <div class="input-group mb-3">
@@ -24,6 +17,7 @@
                             </div>
                         </div>
                     </div>
+                    @error('username') <span style="color: red" class="error">{{ $message }}</span> <br> @enderror
                     <label for="password">Password</label>
                     <div class="input-group mb-3">
                         <input wire:model="password" type="password" class="form-control" placeholder="Password">
@@ -33,6 +27,7 @@
                             </div>
                         </div>
                     </div>
+                    @error('password') <span style="color: red" class="error">{{ $message }}</span> @enderror
                     <div class="row">
                         <div class="col-8">
                             <div class="icheck-primary">
