@@ -29,7 +29,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <button wire:click="show_DataUnits" type="button" class="btn btn btn-block"><i class="fa fa-graduation-cap" aria-hidden="true"></i> ຂໍ້ມູນຫົວໜ່ອຍ</button>
+                                    <button wire:click="show_DataUnits" type="button" class="btn btn btn-block"><i class="fa fa-graduation-cap" aria-hidden="true"></i> ຂໍ້ມູນຫົວໜ່ວຍ</button>
                                 </div>
                             </div>
                         </div>
@@ -232,10 +232,10 @@
                                             </div>
                                         </div>
                                         <div class="col-md-12">
-                                            <label>ຫົວໜ່ອຍ <span class="text-danger">*</span></label>
+                                            <label>ຫົວໜ່ວຍ <span class="text-danger">*</span></label>
                                             <div class="form-group">
                                                 <select wire:model="unit_id" name="" id="" class="form-control @error('unit_id') is-invalid @enderror">
-                                                    <option value="">ເລືອກຫົວໜ່ອຍ</option>
+                                                    <option value="">ເລືອກຫົວໜ່ວຍ</option>
                                                     @foreach($selectUnits as $unit)
                                                     <option value="{{$unit->id}}">{{$unit->name}}</option>
                                                     @endforeach
@@ -269,10 +269,10 @@
                                 <div class="card-header">
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <h6><b>ຂໍ້ມູນສາຂາ ແລະ ລູກຄ້າປະຈຳ</b></h6>
+                                            <h6><b>ຂໍ້ມູນສິນຄ້າ</b></h6>
                                         </div>
                                         <div class="col-md-4">
-                                            <input wire:model="search" type="text" class="form-control" placeholder="search...">
+                                            <input wire:model.live="search" type="text" class="form-control" placeholder="search...">
                                         </div>
                                     </div>
                                 </div>
@@ -283,7 +283,7 @@
                                                 <tr class="text-center">
                                                     <th>ລຳດັບ</th>
                                                     <th>ຊື່ສິນຄ້າ</th>
-                                                    <th>ຫົວໜ່ອຍ</th>
+                                                    <th>ຫົວໜ່ວຍ</th>
                                                     <th>ລາຄາຕົ້ນທືນ</th>
                                                     <th>ການຈັດການ</th>
                                                 </tr>
@@ -341,12 +341,12 @@
         </div>
     </div>
 
-    <!-- show ຂໍ້ມູນຫົວໜ່ອຍ -->
+    <!-- show ຂໍ້ມູນຫົວໜ່ວຍ -->
     <div wire:ignore.self class="modal fabe" id="modal-data-units">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title"><b>ຈັດການຂໍ້ມູນຫົວໜ່ອຍ</b></h4>
+                    <h4 class="modal-title"><b>ຈັດການຂໍ້ມູນຫົວໜ່ວຍ</b></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -364,9 +364,9 @@
                                             <div class="row">
                                                 <input type="hidden" wire:model="hiidenId_units" hidden="{{ $hiidenId_units }}">
                                                 <div class="col-md-12">
-                                                    <label>ຊື່ຫົວໜ່ອຍ <span class="text-red">*</span></label>
+                                                    <label>ຊື່ຫົວໜ່ວຍ <span class="text-red">*</span></label>
                                                     <div class="form-group">
-                                                        <input wire:model="name_units" type="text" class="form-control @error('name_units') is-invaluid @enderror" placeholder="ຊື່ຫົວໜ່ອຍ">
+                                                        <input wire:model="name_units" type="text" class="form-control @error('name_units') is-invaluid @enderror" placeholder="ຊື່ຫົວໜ່ວຍ">
                                                         @error('name_units')
                                                         <span class="error text-red"> {{ $message }}</span>
                                                         @enderror
@@ -390,10 +390,10 @@
                                     <div class="card-header">
                                         <div class="row">
                                             <div class="col-md-8">
-                                                <h6><b>ຂໍ້ມູນຫົວໜ່ອຍ</b></h6>
+                                                <h6><b>ຂໍ້ມູນຫົວໜ່ວຍ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input wire:model="search" type="text" class="form-control" placeholder="search...">
+                                                <input wire:model.live="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -403,7 +403,7 @@
                                                 <thead class="table-secondary">
                                                     <tr class="text-center">
                                                         <th>ລຳດັບ</th>
-                                                        <th>ຊື່ຫົວໜ່ອຍ</th>
+                                                        <th>ຊື່ຫົວໜ່ວຍ</th>
                                                         <th>ການຈັດການ</th>
                                                     </tr>
                                                 </thead>
@@ -434,7 +434,7 @@
             </div>
         </div>
     </div>
-    <!-- show-delete ຂໍ້ມູນຫົວໜ່ອຍ -->
+    <!-- show-delete ຂໍ້ມູນຫົວໜ່ວຍ -->
     <div wire:ignore.self class="modal fabe" id="modal-data-units-delete">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -506,7 +506,7 @@
                                                 <h6><b>ຂໍ້ມູນຕຳແໜ່ງ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input wire:model="search" type="text" class="form-control" placeholder="search...">
+                                                <input wire:model.live="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -641,7 +641,7 @@
                                                 <h6><b>ຂໍ້ມູນພະນັກງານ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input wire:model="search" type="text" class="form-control" placeholder="search...">
+                                                <input wire:model.live="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -790,7 +790,7 @@
                                                 <h6><b>ຂໍ້ມູນສາຂາ ແລະ ລູກຄ້າປະຈຳ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input wire:model="search" type="text" class="form-control" placeholder="ຄົ້ນຫາ...">
+                                                <input wire:model.live="search" type="text" class="form-control" placeholder="ຄົ້ນຫາ...">
                                             </div>
                                         </div>
                                     </div>
@@ -940,7 +940,7 @@
                                                 </select>
                                             </div>
                                             <!-- <div class="col-md-4"> -->
-                                            <!-- <input wire:model="search" type="text" class="form-control" placeholder="search..."> -->
+                                            <!-- <input wire:model.live="search" type="text" class="form-control" placeholder="search..."> -->
                                             <!-- </div> -->
                                         </div>
                                     </div>
@@ -2174,14 +2174,14 @@
         $('#modal-data-products-delete').modal('hide');
     })
 
-    // show add ຂໍ້ມູນຫົວໜ່ອຍ
+    // show add ຂໍ້ມູນຫົວໜ່ວຍ
     window.addEventListener('show-modal-data-units', event => {
         $('#modal-data-units').modal('show');
     })
     window.addEventListener('hide-modal-data-units', event => {
         $('#modal-data-units').modal('hide');
     })
-    // show delete ຂໍ້ມູນຫົວໜ່ອຍ
+    // show delete ຂໍ້ມູນຫົວໜ່ວຍ
     window.addEventListener('show-modal-data-units-delete', event => {
         $('#modal-data-units-delete').modal('show');
     })
