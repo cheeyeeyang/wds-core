@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class TbBranch extends Model
 {
     use HasFactory;
+    protected $table = 'tb_branches';
+    protected $fillable = ['id','fullname','phone','price_id','detail'];
+
+    public function pricename()
+    {
+        return $this->belongsTo('App\Models\TbPrice', 'price_id ', 'id');
+    }
 }

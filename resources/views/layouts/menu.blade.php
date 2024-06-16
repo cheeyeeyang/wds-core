@@ -108,7 +108,7 @@
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->
-            <div style="margin-top:100%;">
+            <div style="margin-top:40vh;">
                 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
                     @csrf
                 </form>

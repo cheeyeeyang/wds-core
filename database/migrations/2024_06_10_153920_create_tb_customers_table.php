@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tb_customers', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
             $table->string('customer_name')->nullable();
             $table->string('alley')->nullable();
             $table->integer('village_id')->unsigned()->nullable();

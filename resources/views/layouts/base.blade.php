@@ -206,6 +206,8 @@
     <script src="{{asset('admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
     <!-- AdminLTE App -->
     <script src="{{asset('admin/dist/js/adminlte.js')}}"></script>
+    <!-- Money format -->
+    <script src="{{asset('js/money.format.js')}}"></script>
     <!-- AdminLTE for demo purposes -->
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{{asset('admin/dist/js/pages/dashboard.js')}}"></script>
