@@ -4,12 +4,15 @@ namespace App\Livewire\Admin\ManageBasic;
 
 use App\Models\TbBranch;
 use App\Models\TbCustomer;
+use App\Models\TbDistrict;
 use App\Models\TbEmployee;
 use App\Models\TbPosition;
 use App\Models\TbPrice;
 use App\Models\TbProduct;
+use App\Models\TbProvince;
 use App\Models\TbUnit;
 use App\Models\TbUserWaterline;
+use App\Models\TbVillage;
 use App\Models\TbWaterLine;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -30,7 +33,10 @@ class ManageBasicInfromatComponent extends Component
         $cus_b_amount, $cus_priceId, $cus_lat, $cus_lng, $cus_user_waterlineId,
         $cus_remark, $hiidenId_customer, $search_waterlineId;
     public $waterline_name, $hiddenId_waterline;
-    public $userwaterline_employeeId, $waterline_waterlineId,$search_UwateremployeeId, $hiddenId_userwaterline;
+    public $userwaterline_employeeId, $waterline_waterlineId, $search_UwateremployeeId, $hiddenId_userwaterline;
+    public $province_name, $hiddenId_province;
+    public $district_name, $Dis_proId, $hiddenId_district;
+    public $village_name, $Vill_disId,$selectDistrict,$selectVillage, $vill_proId, $hiddenId_village;
     public function render()
     {
         $search = $this->search;
@@ -42,6 +48,8 @@ class ManageBasicInfromatComponent extends Component
         $data_userswaterlines = TbUserWaterline::orderBy('id', 'desc')->get();
         $data_waterlines = TbWaterLine::orderBy('id', 'desc')->get();
         $data_employees = TbEmployee::orderBy('id', 'desc')->get();
+        $data_provinces = TbProvince::orderBy('id', 'desc')->get();
+        $data_districts = TbDistrict::orderBy('id', 'desc')->get();
 
         $products = TbProduct::orderBy('id', 'desc')->where(function ($q) {
             $q->where('product_name', 'like', '%' . $this->search . '%');
@@ -102,14 +110,33 @@ class ManageBasicInfromatComponent extends Component
 
         $userwaterlines = TbUserWaterline::orderBy('id', 'desc');
 
-        if($this->search_UwateremployeeId){
+        if ($this->search_UwateremployeeId) {
             $userwaterlines = $userwaterlines->where('employee_id', $this->search_UwateremployeeId);
         }
-        if(!empty($userwaterlines)){
+        if (!empty($userwaterlines)) {
             $userwaterlines = $userwaterlines->paginate(8);
-        }else{
+        } else {
             $userwaterlines = [];
         }
+
+        $provinces = TbProvince::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('province_name', 'like', '%' . $this->search . '%');
+        })->paginate(8);
+
+        $districts = TbDistrict::orderBy('id', 'desc')
+            ->whereIn('province_id', function ($q) {
+                $q->select('id')->from(with(new TbProvince())->getTable())->where('province_name', 'like', '%' . $this->search . '%');
+            })
+            ->orwhere('district_name', 'like', '%' . $this->search . '%')
+            ->paginate(8);
+
+        $villages  = TbVillage::orderBy('id', 'desc')->get();
+        if (!empty($this->vill_proId)) {
+            $this->selectDistrict = TbDistrict::orderBy('id', 'desc')->where('province_id', $this->vill_proId)->get();
+        }
+        // if (!empty($this->Vill_disId)) {
+        //     $this->selectVillage = TbVillage::orderBy('id', 'desc')->where('district_id', $this->Vill_disId)->get();
+        // }
         return view('livewire.admin.manage-basic.manage-basic-infromat-component', compact(
             'units',
             'selectUnits',
@@ -127,6 +154,10 @@ class ManageBasicInfromatComponent extends Component
             'data_waterlines',
             'data_employees',
             'userwaterlines',
+            'provinces',
+            'data_provinces',
+            'districts',
+            'data_districts',
         ))->layout('layouts.base');
     }
 
@@ -1117,19 +1148,284 @@ class ManageBasicInfromatComponent extends Component
     {
         $this->dispatch('show-modal-village');
     }
+    public function resetFiledVillage()
+    {
+        $this->village_name = '';
+        // $this->vill_proId = '';
+        $this->Vill_disId = '';
+        $this->hiddenId_village = '';
+    }
+    public function Store_Village()
+    {
+        $updateProId = $this->hiddenId_village;
 
+        if ($updateProId > 0) {
+
+            $this->validate([
+                'village_name' => 'required',
+                // 'vill_proId' => 'required',
+                'Vill_disId' => 'required',
+            ], [
+                'village_name.required' => 'ກະລຸນາໃສ່ຊື່ເມືອງກ່ອນ!',
+                // 'vill_proId.required' => 'ກະລຸນາເລືອກແຂວງກ່ອນ!',
+                'Vill_disId.required' => 'ກະລຸນາເລືອກເມືອງກ່ອນ!',
+            ]);
+
+            try {
+
+                $update_Village = TbVillage::find($updateProId);
+                $update_Village->village_name = $this->village_name;
+                $update_Village->district_id = $this->Vill_disId;
+
+                $update_Village->update();
+                $this->resetFiledVillage();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'village_name' => 'required',
+                'Vill_disId' => 'required',
+            ], [
+                'village_name.required' => 'ກະລຸນາໃສ່ຊື່ເມືອງກ່ອນ!',
+                'Vill_disId.required' => 'ກະລຸນາເລືອກເມືອງກ່ອນ!',
+            ]);
+
+            try {
+                $add_Village = new TbVillage();
+                if ($this->village_name) {
+                    $add_Village->village_name = $this->village_name;
+                }
+                if ($this->Vill_disId) {
+                    $add_Village->district_id = $this->Vill_disId;
+                }
+                $add_Village->save();
+                $this->resetFiledVillage();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit price -->
+    public function showEditVillage($ids)
+    {
+        $show_Edit_Village = TbVillage::find($ids);
+        $this->hiddenId_village = $ids;
+        $this->village_name = $show_Edit_Village->village_name;
+        $this->vill_proId = $show_Edit_Village->district_id;
+    }
+    // <!-- show-delete price -->
+    public function showDetory_Village($ids)
+    {
+        $this->dispatch('hide-modal-village');
+        $this->dispatch('show-modal-village-delete');
+        $show_delete = TbVillage::find($ids);
+        $this->hiddenId_village = $ids;
+    }
+    // <!-- delete price -->
+    public function delete_Village()
+    {
+        $ids = $this->hiddenId_village;
+        $delete_Village = TbVillage::find($ids);
+        $delete_Village->delete();
+        $this->resetFiledVillage();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-village-delete');
+        $this->dispatch('show-modal-village');
+    }
+    public function get_backVillage()
+    {
+        $this->dispatch('show-modal-village');
+        $this->dispatch('hide-modal-village-delete');
+    }
+    // -- ========= end ຂໍ້ມູນເມືອງ ========== -- //
 
     // <!-- show ຂໍ້ມູນເມືອງ -->
     public function show_DataDistrict()
     {
         $this->dispatch('show-modal-district');
     }
+    public function resetFiledDistrict()
+    {
+        $this->district_name = '';
+        $this->Dis_proId = '';
+        $this->hiddenId_district = '';
+    }
+    public function Store_District()
+    {
+        $updateDisId = $this->hiddenId_district;
+
+        if ($updateDisId > 0) {
+
+            $this->validate([
+                'district_name' => 'required',
+                'Dis_proId' => 'required',
+            ], [
+                'district_name.required' => 'ກະລຸນາໃສ່ຊື່ເມືອງກ່ອນ!',
+                'Dis_proId.required' => 'ກະລຸນາເລືອກແຂວງກ່ອນ!',
+            ]);
+
+            try {
+
+                $update_District = TbDistrict::find($updateDisId);
+                $update_District->district_name = $this->district_name;
+                $update_District->province_id = $this->Dis_proId;
+
+                $update_District->update();
+                $this->resetFiledDistrict();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'district_name' => 'required',
+                'Dis_proId' => 'required',
+            ], [
+                'district_name.required' => 'ກະລຸນາໃສ່ຊື່ເມືອງກ່ອນ!',
+                'Dis_proId.required' => 'ກະລຸນາເລືອກແຂວງກ່ອນ!',
+            ]);
+
+            try {
+                $add_District = new TbDistrict();
+                if ($this->district_name) {
+                    $add_District->district_name = $this->district_name;
+                }
+                if ($this->Dis_proId) {
+                    $add_District->province_id = $this->Dis_proId;
+                }
+                $add_District->save();
+                $this->resetFiledDistrict();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit price -->
+    public function showEditDistrict($ids)
+    {
+        $show_Edit_District = TbDistrict::find($ids);
+        $this->hiddenId_district = $ids;
+        $this->district_name = $show_Edit_District->district_name;
+        $this->Dis_proId = $show_Edit_District->province_id;
+    }
+    // <!-- show-delete price -->
+    public function showDetory_District($ids)
+    {
+        $this->dispatch('hide-modal-district');
+        $this->dispatch('show-modal-district-delete');
+        $show_delete = TbDistrict::find($ids);
+        $this->hiddenId_district = $ids;
+    }
+    // <!-- delete price -->
+    public function delete_District()
+    {
+        $ids = $this->hiddenId_district;
+        $delete_District = TbDistrict::find($ids);
+        $delete_District->delete();
+        $this->resetFiledDistrict();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-district-delete');
+        $this->dispatch('show-modal-district');
+    }
+    public function get_backDistrict()
+    {
+        $this->dispatch('show-modal-district');
+        $this->dispatch('hide-modal-district-delete');
+    }
+    // -- ========= end ຂໍ້ມູນເມືອງ ========== -- //
 
     // <!-- show ຂໍ້ມູນແຂວງ -->
     public function show_DataProvince()
     {
         $this->dispatch('show-modal-province');
     }
+    public function resetFiledProvince()
+    {
+        $this->province_name = '';
+        $this->hiddenId_province = '';
+    }
+    public function Store_Province()
+    {
+        $updateProId = $this->hiddenId_province;
+
+        if ($updateProId > 0) {
+
+            $this->validate([
+                'province_name' => 'required',
+            ], [
+                'province_name.required' => 'ກະລຸນາໃສ່ຊື່ແຂວງກ່ອນ!',
+            ]);
+
+            try {
+
+                $update_province = TbProvince::find($updateProId);
+                $update_province->province_name = $this->province_name;
+
+                $update_province->update();
+                $this->resetFiledProvince();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'province_name' => 'required',
+            ], [
+                'province_name.required' => 'ກະລຸນາໃສ່ຊື່ແຂວງກ່ອນ!',
+            ]);
+
+            try {
+                $add_Province = new TbProvince();
+                if ($this->province_name) {
+                    $add_Province->province_name = $this->province_name;
+                }
+                $add_Province->save();
+                $this->resetFiledProvince();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit price -->
+    public function showEditProvince($ids)
+    {
+        $show_Edit_province = TbProvince::find($ids);
+        $this->hiddenId_province = $ids;
+        $this->province_name = $show_Edit_province->province_name;
+    }
+    // <!-- show-delete price -->
+    public function showDetory_Province($ids)
+    {
+        $this->dispatch('hide-modal-province');
+        $this->dispatch('show-modal-province-delete');
+        $show_delete = TbProvince::find($ids);
+        $this->hiddenId_province = $ids;
+    }
+    // <!-- delete price -->
+    public function delete_Province()
+    {
+        $ids = $this->hiddenId_province;
+        $delete_Province = TbProvince::find($ids);
+        $delete_Province->delete();
+        $this->resetFiledProvince();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-province-delete');
+        $this->dispatch('show-modal-province');
+    }
+    public function get_backProvince()
+    {
+        $this->dispatch('show-modal-province');
+        $this->dispatch('hide-modal-province-delete');
+    }
+    // -- ========= end ຂໍ້ມູນແຂວງ ========== -- //
 
     // <!-- show ຂໍ້ມູນເງື່ອນໄຂການສະສົມຄະແນນ -->
     public function show_CriteriaForAccumulatingPoints()

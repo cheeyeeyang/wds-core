@@ -1451,8 +1451,8 @@
             </div>
         </div>
     </div>
-        <!-- show-delete ຂໍ້ມູນທີມສົ່ງນໍ້າ -->
-        <div wire:ignore.self class="modal fabe" id="modal-data-user-waterline-delete">
+    <!-- show-delete ຂໍ້ມູນທີມສົ່ງນໍ້າ -->
+    <div wire:ignore.self class="modal fabe" id="modal-data-user-waterline-delete">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-info">
@@ -1497,23 +1497,39 @@
                                                 <div class="col-md-12">
                                                     <label>ເລືອກແຂວງ</label>
                                                     <div class="form-group">
-                                                        <select name="" id="" class="form-control">
+                                                        <select wire:model="vill_proId" name="" id="" class="form-control">
                                                             <option value="">ເລືອກແຂວງ</option>
+                                                            @foreach($data_provinces as $item)
+                                                            <option value="{{$item->id}}"> {{$item->province_name}}</option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <label>ເລືອກເມືອງ</label>
+                                                    <label>ເລືອກເມືອງ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <select name="" id="" class="form-control">
+                                                        <select wire:model="Vill_disId" name="" id="" class="form-control @error('Vill_disId') is-invalid @enderror">
                                                             <option value="">ເລືອກເມືອງ</option>
+                                                            @foreach($data_districts as $item)
+                                                            <option value="{{$item->id}}"> {{$item->district_name}}</option>
+                                                            @endforeach
                                                         </select>
+                                                        @error('Vill_disId')
+                                                        <span class="error text-danger">
+                                                            {{$message}}
+                                                        </span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <label for="">ຊື່ບ້ານ</label>
+                                                    <label for="">ຊື່ບ້ານ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ຊື່ບ້ານ">
+                                                        <input wire:model="village_name" type="text" class="form-control @error('village_name') is-invalid @enderror" placeholder="ຊື່ບ້ານ">
+                                                        @error('village_name')
+                                                        <span class="error text-danger">
+                                                            {{$message}}
+                                                        </span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -1521,8 +1537,8 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button type="button" class="btn btn-primary">ຣີເຊັດ</button>
-                                            <button type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
+                                            <button wire:click="resetFiledVillage()" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
+                                            <button wire:click="Store_Village()" type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1574,6 +1590,27 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fabe" id="modal-village-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">ລືບຂໍ້ມູນບ້ານ</h4>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" wire:model="hiddenId_district" hidden="{{$hiddenId_district}}">
+                    <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button wire:click="get_backDistrict()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_District()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- show ຂໍ້ມູນເມືອງ -->
     <div wire:ignore.self class="modal fabe" id="modal-district">
         <div class="modal-dialog modal-xl">
@@ -1595,18 +1632,28 @@
                                     <div class="card-body">
                                         <form>
                                             <div class="row">
+                                                <input type="hidden" wire:model="hiddenId_district" value="{{$hiddenId_district}}">
                                                 <div class="col-md-12">
-                                                    <label>ເລືອກແຂວງ</label>
+                                                    <label>ເລືອກແຂວງ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <select name="" id="" class="form-control">
+                                                        <select wire:model="Dis_proId" name="" id="" class="form-control @error('Dis_proId') is-invalid @enderror">
                                                             <option value="">ເລືອກແຂວງ</option>
+                                                            @foreach($data_provinces as $valuepro)
+                                                            <option value="{{$valuepro->id}}">{{$valuepro->province_name}}</option>
+                                                            @endforeach
                                                         </select>
+                                                        @error('Dis_proId')
+                                                        <span class="error text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label for="">ຊື່ເມືອງ</label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ຊື່ເມືອງ">
+                                                        <input wire:model="district_name" type="text" class="form-control @error('Dis_proId') is-invalid @enderror" placeholder="ຊື່ເມືອງ">
+                                                        @error('Dis_proId')
+                                                        <span class="error text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -1614,8 +1661,8 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button type="button" class="btn btn-primary">ຣີເຊັດ</button>
-                                            <button type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
+                                            <button wire:click="resetFiledDistrict()" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
+                                            <button wire:click="Store_District()" type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1628,7 +1675,7 @@
                                                 <h6><b>ຂໍ້ມູນເມືອງ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" placeholder="search...">
+                                                <input wire:model.live="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -1644,17 +1691,21 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php $i = 1;@endphp
+                                                    @foreach($districts as $item)
                                                     <tr class="text-center">
-                                                        <td>01</td>
-                                                        <td>ເມືອງໝື່ນ</td>
-                                                        <td>ແຂວງວຽງຈັນ</td>
+                                                        <td>{{$i++}}</td>
+                                                        <td>{{$item->district_name}}</td>
+                                                        <td>{{!empty($item->provincename->name) ? $item->provincename->name : ''}}</td>
                                                         <td>
-                                                            <a href="" class="mr-3"><i class="fa fa-edit"></i> edit</a>
-                                                            <a href="" class=""><i class="fa fa-trash text-red"></i> delete</a>
+                                                            <a href="#" wire:click="showEditDistrict(' {{$item->id}} ')" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
+                                                            <a href="#" wire:click="showDetory_District(' {{$item->id}} ')" class="text-red"><i class="fa fa-trash"></i> ລືບ</a>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
+                                            {{$districts->links()}}
                                         </div>
                                     </div>
                                 </div>
@@ -1665,6 +1716,27 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fabe" id="modal-district-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">ລືບຂໍ້ມູນເມຶອງ</h4>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" wire:model="hiddenId_district" hidden="{{$hiddenId_district}}">
+                    <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button wire:click="get_backDistrict()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_District()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- show ຂໍ້ມູນແຂວງ -->
     <div wire:ignore.self class="modal fabe" id="modal-province">
         <div class="modal-dialog modal-xl">
@@ -1686,10 +1758,14 @@
                                     <div class="card-body">
                                         <form>
                                             <div class="row">
+                                                <input type="hidden" wire:model="hiddenId_province" value="{{$hiddenId_province}}">
                                                 <div class="col-md-12">
-                                                    <label for="">ຊື່ແຂວງ</label>
+                                                    <label for="">ຊື່ແຂວງ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ຊື່ແຂວງ">
+                                                        <input wire:model="province_name" type="text" class="form-control @error('province_name') is-invalid @enderror" placeholder="ຊື່ແຂວງ">
+                                                        @error('province_name')
+                                                        <span class="error text-danger">{{$message}}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -1697,8 +1773,8 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button type="button" class="btn btn-primary">ຣີເຊັດ</button>
-                                            <button type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
+                                            <button wire:click="resetFiledProvince()" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
+                                            <button wire:click="Store_Province()" type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1711,7 +1787,7 @@
                                                 <h6><b>ຂໍ້ມູນແຂວງ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" placeholder="search...">
+                                                <input wire:model.live="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -1726,16 +1802,20 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php $i = 1;@endphp
+                                                    @foreach($provinces as $item)
                                                     <tr class="text-center">
-                                                        <td>01</td>
-                                                        <td>ແຂວງວຽງຈັນ</td>
+                                                        <td>{{$i++}}</td>
+                                                        <td>{{$item->province_name}}</td>
                                                         <td>
-                                                            <a href="" class="mr-3"><i class="fa fa-edit"></i> edit</a>
-                                                            <a href="" class=""><i class="fa fa-trash text-red"></i> delete</a>
+                                                            <a href="#" wire:click="showEditProvince('{{$item->id}}')" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
+                                                            <a href="#" wire:click="showDetory_Province('{{$item->id}}')" class="text-red"><i class="fa fa-trash"></i> ລືບ</a>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
+                                            {{$provinces->links()}}
                                         </div>
                                     </div>
                                 </div>
@@ -1746,6 +1826,27 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fabe" id="modal-province-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">ລືບຂໍ້ມູນແຂວງ</h4>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" wire:model="hiddenId_province" hidden="{{$hiddenId_province}}">
+                    <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button wire:click="get_backProvince()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_Province()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- show ເງື່ອນໄຂການສະສົມຄະແນນ -->
     <div wire:ignore.self class="modal fabe" id="modal-criteria-for-accumulating-points">
         <div class="modal-dialog modal-xl">
@@ -2211,6 +2312,13 @@
     window.addEventListener('hide-modal-village', event => {
         $('#modal-village').modal('hide');
     })
+    window.addEventListener('show-modal-village-delete', event => {
+        $('#modal-village-delete').modal('show');
+    })
+    window.addEventListener('hide-modal-village-delete', event => {
+        $('#modal-village-delete').modal('hide');
+    })
+
     // ຂໍ້ມູນເມືອງ
     window.addEventListener('show-modal-district', event => {
         $('#modal-district').modal('show');
@@ -2218,12 +2326,25 @@
     window.addEventListener('hide-modal-district', event => {
         $('#modal-district').modal('hide');
     })
+    window.addEventListener('show-modal-district-delete', event => {
+        $('#modal-district-delete').modal('show');
+    })
+    window.addEventListener('hide-modal-district-delete', event => {
+        $('#modal-district-delete').modal('hide');
+    })
+
     // ຂໍ້ມູນແຂວງ
     window.addEventListener('show-modal-province', event => {
         $('#modal-province').modal('show');
     })
     window.addEventListener('hide-modal-province', event => {
         $('#modal-province').modal('hide');
+    })
+    window.addEventListener('show-modal-province-delete', event => {
+        $('#modal-province-delete').modal('show');
+    })
+    window.addEventListener('hide-modal-province-delete', event => {
+        $('#modal-province-delete').modal('hide');
     })
     // ເງື່ອນໄຂການສະສົມຄະແນນ
     window.addEventListener('show-modal-criteria-for-accumulating-points', event => {
