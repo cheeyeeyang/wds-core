@@ -11,6 +11,7 @@ class TbProduct extends Model
     use HasFactory;
     protected $table = 'tb_products';
     protected $fillable = ['id', 'barcode', 'product_name', 'unit_id', 'price_cost'];
+    
     public function units(): BelongsTo
     {
         return $this->belongsTo(TbUnit::class, 'unit_id', 'id');

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TbPrice extends Model
 {
@@ -11,8 +12,8 @@ class TbPrice extends Model
     protected $table = 'tb_prices';
     protected $fillable = ['id','product_id','price'];
 
-    public function pricename()
+    public function productname(): BelongsTo
     {
-        return $this->belongsTo('App\Models\TbProduct', 'product_id ', 'id');
+        return $this->belongsTo(TbProduct::class, 'product_id', 'id');
     }
 }

@@ -10,6 +10,7 @@ use App\Models\TbPosition;
 use App\Models\TbPrice;
 use App\Models\TbProduct;
 use App\Models\TbProvince;
+use App\Models\TbScoreCriteria;
 use App\Models\TbUnit;
 use App\Models\TbUserWaterline;
 use App\Models\TbVillage;
@@ -36,7 +37,8 @@ class ManageBasicInfromatComponent extends Component
     public $userwaterline_employeeId, $waterline_waterlineId, $search_UwateremployeeId, $hiddenId_userwaterline;
     public $province_name, $hiddenId_province;
     public $district_name, $Dis_proId, $hiddenId_district;
-    public $village_name, $Vill_disId,$selectDistrict,$selectVillage, $vill_proId, $hiddenId_village;
+    public $village_name, $Vill_disId, $selectDistrict = [], $selectVillage, $vill_proId, $hiddenId_village;
+    public $criteria, $score, $hiddenId_scoreC;
     public function render()
     {
         $search = $this->search;
@@ -130,13 +132,19 @@ class ManageBasicInfromatComponent extends Component
             ->orwhere('district_name', 'like', '%' . $this->search . '%')
             ->paginate(8);
 
-        $villages  = TbVillage::orderBy('id', 'desc')->get();
+        $villages  = TbVillage::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('village_name', 'like', '%' . $this->search . '%');
+        })->paginate(8);
+
         if (!empty($this->vill_proId)) {
-            $this->selectDistrict = TbDistrict::orderBy('id', 'desc')->where('province_id', $this->vill_proId)->get();
+            $this->selectDistrict = TbDistrict::where('province_id', $this->vill_proId)->get();
         }
-        // if (!empty($this->Vill_disId)) {
-        //     $this->selectVillage = TbVillage::orderBy('id', 'desc')->where('district_id', $this->Vill_disId)->get();
-        // }
+
+        $score_criterias = TbScoreCriteria::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('criteria', 'like', '%' . $this->search . '%')
+                ->orwhere('score', 'like', '%' . $this->search . '%');
+        })->paginate(8);
+
         return view('livewire.admin.manage-basic.manage-basic-infromat-component', compact(
             'units',
             'selectUnits',
@@ -158,6 +166,8 @@ class ManageBasicInfromatComponent extends Component
             'data_provinces',
             'districts',
             'data_districts',
+            'villages',
+            'score_criterias',
         ))->layout('layouts.base');
     }
 
@@ -1241,7 +1251,7 @@ class ManageBasicInfromatComponent extends Component
         $this->dispatch('show-modal-village');
         $this->dispatch('hide-modal-village-delete');
     }
-    // -- ========= end ຂໍ້ມູນເມືອງ ========== -- //
+    // -- ========= end ຂໍ້ມູນບ້ານ ========== -- //
 
     // <!-- show ຂໍ້ມູນເມືອງ -->
     public function show_DataDistrict()
@@ -1430,8 +1440,100 @@ class ManageBasicInfromatComponent extends Component
     // <!-- show ຂໍ້ມູນເງື່ອນໄຂການສະສົມຄະແນນ -->
     public function show_CriteriaForAccumulatingPoints()
     {
-        $this->dispatch('show-modal-criteria-for-accumulating-points');
+        $this->dispatch('show-modal-criteria-score');
     }
+    public function resetFiledCriteriaScore()
+    {
+        $this->criteria = '';
+        $this->score = '';
+        $this->hiddenId_scoreC = '';
+    }
+    public function Store_CriteriaScore()
+    {
+        $updateSCId = $this->hiddenId_scoreC;
+
+        if ($updateSCId > 0) {
+
+            $this->validate([
+                'criteria' => 'required',
+                'score' => 'required',
+            ], [
+                'criteria.required' => 'ກະລຸນາໃສ່ເງື່ອນໄຂກ່ອນ!',
+                'score.required' => 'ກະລຸນາໃສ່ຄະແນນກ່ອນ!',
+            ]);
+
+            try {
+
+                $update_Score_criteria = TbScoreCriteria::find($updateSCId);
+                $update_Score_criteria->criteria = $this->criteria;
+                $update_Score_criteria->score = $this->score;
+
+                $update_Score_criteria->update();
+                $this->resetFiledCriteriaScore();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'criteria' => 'required',
+                'score' => 'required',
+            ], [
+                'criteria.required' => 'ກະລຸນາໃສ່ເງື່ອນໄຂກ່ອນ!',
+                'score.required' => 'ກະລຸນາໃສ່ຄະແນນກ່ອນ!',
+            ]);
+
+            try {
+                $add_Score_criteria = new TbScoreCriteria();
+                if ($this->criteria) {
+                    $add_Score_criteria->criteria = $this->criteria;
+                }
+                if ($this->score) {
+                    $add_Score_criteria->score = $this->score;
+                }
+                $add_Score_criteria->save();
+                $this->resetFiledCriteriaScore();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                dd($ex);
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit price -->
+    public function showEditCriteriaScore($ids)
+    {
+        $show_Edit_Score_Cri = TbScoreCriteria::find($ids);
+        $this->hiddenId_scoreC = $ids;
+        $this->criteria = $show_Edit_Score_Cri->criteria;
+        $this->score = $show_Edit_Score_Cri->score;
+    }
+    // <!-- show-delete price -->
+    public function showDetory_CriteriaScore($ids)
+    {
+        $this->dispatch('hide-modal-criteria-score');
+        $this->dispatch('show-modal-criteria-score-delete');
+        $show_delete = TbScoreCriteria::find($ids);
+        $this->hiddenId_scoreC = $ids;
+    }
+    // <!-- delete price -->
+    public function delete_CriteriaScore()
+    {
+        $ids = $this->hiddenId_scoreC;
+        $delete_SC = TbScoreCriteria::find($ids);
+        $delete_SC->delete();
+        $this->resetFiledProvince();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-criteria-score-delete');
+        $this->dispatch('show-modal-criteria-score');
+    }
+    public function get_backCriteriaScore()
+    {
+        $this->dispatch('show-modal-criteria-score');
+        $this->dispatch('hide-modal-criteria-score-delete');
+    }
+    // -- ========= end ຂໍ້ມູນແຂວງ ========== -- //
 
     // <!-- show ຂໍ້ມູນຈັດການຂໍ້ມູນເງີນເດືອນ -->
     public function show_ManageSalaryInformation()

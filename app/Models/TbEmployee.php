@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TbEmployee extends Model
 {
@@ -11,8 +12,8 @@ class TbEmployee extends Model
     protected $table = 'tb_employees';
     protected $fillable = ['id', 'fullname', 'phone', 'position_id'];
 
-    public function positionname()
+    public function position(): BelongsTo
     {
-        return $this->belongsTo('App\Models\TbPosition', 'position_id ', 'id');
+        return $this->belongsTo(TbPosition::class, 'position_id', 'id');
     }
 }

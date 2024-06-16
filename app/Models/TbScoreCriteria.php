@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class TbScoreCriteria extends Model
 {
     use HasFactory;
+    protected $table = 'tb_score_criterias';
+    protected $fillable = ['id', 'criteria', 'score'];
 }

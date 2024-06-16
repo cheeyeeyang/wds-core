@@ -306,16 +306,13 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
-                                        <div class="float-center">
-                                            {{$products->links()}}
-                                        </div>
+                                         {{$products->links()}}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -324,7 +321,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-info">
-                    <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
+                    <h4 class="modal-title">ລືບຂໍ້ມູນສິນຄ້າ</h4>
                     <button class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -377,7 +374,7 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button wire:click="resetFiledUnits" type="button" class="btn btn-primary">ຣີເຊັດ</button>
+                                            <button wire:click="resetFiledUnits" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
                                             <button wire:click="Store_units()" type="button" class="btn btn-success">
                                                 <i class="fa fa-download"></i> ບັນທືກ
                                             </button>
@@ -439,7 +436,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-info">
-                    <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
+                    <h4 class="modal-title">ລືບຂໍ້ມູນຫົວໜ່ວຍ</h4>
                     <button class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -552,7 +549,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-info">
-                    <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
+                    <h4 class="modal-title">ລືບຂໍ້ມູນຕຳແໜ່ງ</h4>
                     <button class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -665,7 +662,7 @@
                                                         <td>{{$items->fullname}}</td>
                                                         <td>{{$items->phone}}</td>
                                                         <td>
-                                                            {{!empty($items->positionname->name) ? $items->positionname->name : ''}}
+                                                            {{!empty($items->position->name) ? $items->position->name : ''}}
                                                         </td>
                                                         <td>
                                                             <a href="#" wire:click="showEditEmplyee(' {{$items->id}} ')" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
@@ -693,7 +690,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-info">
-                    <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
+                    <h4 class="modal-title">ລືບຂໍ້ມູນພະນັກງານ</h4>
                     <button class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -843,7 +840,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-info">
-                    <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
+                    <h4 class="modal-title">ລືບຂໍ້ມູນສາຂາ-ລູກຄ້າປະຈຳ</h4>
                     <button class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -987,7 +984,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-info">
-                    <h4 class="modal-title">ລືບຂໍ້ມູນ</h4>
+                    <h4 class="modal-title">ລືບຂໍ້ມູນລາຄາ</h4>
                     <button class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -1494,10 +1491,11 @@
                                     <div class="card-body">
                                         <form>
                                             <div class="row">
+                                                <input type="hidden" wire:model="hiddenId_village" value="{{$hiddenId_village}}">
                                                 <div class="col-md-12">
                                                     <label>ເລືອກແຂວງ</label>
                                                     <div class="form-group">
-                                                        <select wire:model="vill_proId" name="" id="" class="form-control">
+                                                        <select wire:model.live="vill_proId" name="vill_proId" id="" class="form-control">
                                                             <option value="">ເລືອກແຂວງ</option>
                                                             @foreach($data_provinces as $item)
                                                             <option value="{{$item->id}}"> {{$item->province_name}}</option>
@@ -1510,8 +1508,8 @@
                                                     <div class="form-group">
                                                         <select wire:model="Vill_disId" name="" id="" class="form-control @error('Vill_disId') is-invalid @enderror">
                                                             <option value="">ເລືອກເມືອງ</option>
-                                                            @foreach($data_districts as $item)
-                                                            <option value="{{$item->id}}"> {{$item->district_name}}</option>
+                                                            @foreach($selectDistrict as $item)
+                                                            <option value="{{$item->id}}" select> {{$item->district_name}}</option>
                                                             @endforeach
                                                         </select>
                                                         @error('Vill_disId')
@@ -1551,7 +1549,7 @@
                                                 <h6><b>ຂໍ້ມູນບ້ານ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" placeholder="search...">
+                                                <input wire:model.live="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -1568,18 +1566,22 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php $i = 1;@endphp
+                                                    @foreach($villages as $item)
                                                     <tr class="text-center">
-                                                        <td>01</td>
-                                                        <td>ໂພນສີວິໄລ</td>
-                                                        <td>ເມືອງໝື່ນ</td>
-                                                        <td>ແຂວງວຽງຈັນ</td>
+                                                        <td>{{$i++}}</td>
+                                                        <td>{{$item->village_name}}</td>
+                                                        <td>{{!empty($item->district->district_name) ? $item->district->district_name : ''}}</td>
+                                                        <td>{{!empty($item->district->province->province_name) ? $item->district->province->province_name : ''}}</td>
                                                         <td>
-                                                            <a href="" class="mr-3"><i class="fa fa-edit"></i> edit</a>
-                                                            <a href="" class=""><i class="fa fa-trash text-red"></i> delete</a>
+                                                            <a href="#" wire:click="showEditVillage(' {{$item->id}} ')" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
+                                                            <a href="#" wire:click="showDetory_Village(' {{$item->id}} ')" class="text-red"><i class="fa fa-trash "></i> ລືບ</a>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
+                                            {{$villages->links()}}
                                         </div>
                                     </div>
                                 </div>
@@ -1600,12 +1602,12 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" wire:model="hiddenId_district" hidden="{{$hiddenId_district}}">
+                    <input type="hidden" wire:model="hiddenId_village" hidden="{{$hiddenId_village}}">
                     <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button wire:click="get_backDistrict()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
-                    <button wire:click="delete_District()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                    <button wire:click="get_backVillage()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_Village()" class="btn btn-sm btn-success">ຕົກລົງ</button>
                 </div>
             </div>
         </div>
@@ -1696,7 +1698,7 @@
                                                     <tr class="text-center">
                                                         <td>{{$i++}}</td>
                                                         <td>{{$item->district_name}}</td>
-                                                        <td>{{!empty($item->provincename->name) ? $item->provincename->name : ''}}</td>
+                                                        <td>{{!empty($item->province->province_name) ? $item->province->province_name : ''}}</td>
                                                         <td>
                                                             <a href="#" wire:click="showEditDistrict(' {{$item->id}} ')" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
                                                             <a href="#" wire:click="showDetory_District(' {{$item->id}} ')" class="text-red"><i class="fa fa-trash"></i> ລືບ</a>
@@ -1848,7 +1850,7 @@
     </div>
 
     <!-- show ເງື່ອນໄຂການສະສົມຄະແນນ -->
-    <div wire:ignore.self class="modal fabe" id="modal-criteria-for-accumulating-points">
+    <div wire:ignore.self class="modal fabe" id="modal-criteria-score">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1868,16 +1870,23 @@
                                     <div class="card-body">
                                         <form>
                                             <div class="row">
+                                                <input type="hidden" wire:model="hiddenId_scoreC" value="{{$hiddenId_scoreC}}">
                                                 <div class="col-md-12">
-                                                    <label for="">ເງື່ອນໄຂ</label>
+                                                    <label for="">ເງື່ອນໄຂ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ເງື່ອນໄຂ">
+                                                        <input wire:model="criteria" type="text" class="form-control @error('criteria') is-invalid @enderror" placeholder="ເງື່ອນໄຂ">
+                                                        @error('criteria')
+                                                        <span class="error text-danger">{{$message}}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <label for="">ຄະແນນ</label>
+                                                    <label for="">ຄະແນນ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ຄະແນນ">
+                                                        <input wire:model="score" type="text" class="form-control @error('score') is-invalid @enderror" placeholder="ຄະແນນ" onkeypress="validate(event)">
+                                                        @error('score')
+                                                        <span class="error text-danger">{{$message}}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -1885,8 +1894,8 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button type="button" class="btn btn-primary">ຣີເຊັດ</button>
-                                            <button type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
+                                            <button wire:click="resetFiledCriteriaScore()" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
+                                            <button wire:click="Store_CriteriaScore()" type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1899,7 +1908,7 @@
                                                 <h6><b>ຂໍ້ມູນການສະສົມຄະແນນ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" placeholder="search...">
+                                                <input wire:model.live="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -1916,20 +1925,26 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php $i = 1;@endphp
+                                                    @foreach($score_criterias as $item)
                                                     <tr class="text-center">
-                                                        <td>01</td>
-                                                        <td>1 ຕຸກ</td>
-                                                        <td>1 ຄະແນນ</td>
+                                                        <td>{{$i++}}</td>
+                                                        <td>{{$item->criteria}}</td>
+                                                        <td>{{$item->score}} ຄະແນນ</td>
                                                         <td>
-
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="check1" name="option1" value="something" checked>
+                                                            </div>
                                                         </td>
                                                         <td>
-                                                            <a href="" class="mr-3"><i class="fa fa-edit"></i> edit</a>
-                                                            <a href="" class=""><i class="fa fa-trash text-red"></i> delete</a>
+                                                            <a href="#" wire:click="showEditCriteriaScore('{{$item->id}}')" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
+                                                            <a href="#" wire:click="showDetory_CriteriaScore('{{$item->id}}')" class="text-red"><i class="fa fa-trash"></i> ລືບ</a>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
+                                            {{$score_criterias->links()}}
                                         </div>
                                     </div>
                                 </div>
@@ -1940,6 +1955,27 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fabe" id="modal-criteria-score-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">ລືບຂໍ້ມູນເງື່ອນໄຂ-ຄະແນນ</h4>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" wire:model="hiddenId_scoreC" hidden="{{$hiddenId_scoreC}}">
+                    <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button wire:click="get_backCriteriaScore()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_CriteriaScore()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- show ຈັດການຂໍ້ມູນເງີນເດືອນ -->
     <div wire:ignore.self class="modal fabe" id="modal-manage-salary-information">
         <div class="modal-dialog modal-xl">
@@ -2347,12 +2383,19 @@
         $('#modal-province-delete').modal('hide');
     })
     // ເງື່ອນໄຂການສະສົມຄະແນນ
-    window.addEventListener('show-modal-criteria-for-accumulating-points', event => {
-        $('#modal-criteria-for-accumulating-points').modal('show');
+    window.addEventListener('show-modal-criteria-score', event => {
+        $('#modal-criteria-score').modal('show');
     })
-    window.addEventListener('hide-modal-criteria-for-accumulating-points', event => {
-        $('#modal-criteria-for-accumulating-points').modal('hide');
+    window.addEventListener('hide-modal-criteria-score', event => {
+        $('#modal-criteria-score').modal('hide');
     })
+    window.addEventListener('show-modal-criteria-score-delete', event => {
+        $('#modal-criteria-score-delete').modal('show');
+    })
+    window.addEventListener('hide-modal-criteria-score-delete', event => {
+        $('#modal-criteria-score-delete').modal('hide');
+    })
+
     // ຈັດການຂໍ້ມູນເງີນເດືອນ
     window.addEventListener('show-modal-manage-salary-information', event => {
         $('#modal-manage-salary-information').modal('show');
