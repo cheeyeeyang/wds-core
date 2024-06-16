@@ -18,9 +18,9 @@
                                 <div class="card-header">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label>ຊື່ຜູ້ໃຊ້</label>
+                                            <label>ຊື່ສິດນຳໃຊ້ລະບົບ</label>
                                             <div class="form-group">
-                                                <input type="text" class="form-control" placeholder="ຊື່ຜູ້ໃຊ້">
+                                                <input type="text" class="form-control" placeholder="ຊື່ສິດນຳໃຊ້ລະບົບ">
                                             </div>
                                         </div>
                                     </div>

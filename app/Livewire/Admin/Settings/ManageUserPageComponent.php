@@ -10,4 +10,6 @@ class ManageUserPageComponent extends Component
     {
         return view('livewire.admin.settings.manage-user-page-component')->layout('layouts.base');
     }
+    
+    // public function resetFiled
 }
