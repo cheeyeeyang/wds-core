@@ -306,7 +306,7 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
-                                         {{$products->links()}}
+                                        {{$products->links()}}
                                     </div>
                                 </div>
                             </div>
@@ -1930,7 +1930,7 @@
                                                     <tr class="text-center">
                                                         <td>{{$i++}}</td>
                                                         <td>{{$item->criteria}}</td>
-                                                        <td>{{$item->score}} ຄະແນນ</td>
+                                                        <td>{{!empty($item->score) ? $item->score : '0'}} ຄະແນນ</td>
                                                         <td>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox" id="check1" name="option1" value="something" checked>
@@ -1997,20 +1997,35 @@
                                     <div class="card-body">
                                         <form>
                                             <div class="row">
+                                                <input type="hidden" wire:model="hiddenId_sala" value="{{$hiddenId_sala}}">
                                                 <div class="col-md-12">
-                                                    <label for="">ເລືອກຕຳແໜ່ງ</label>
+                                                    <label for="">ເລືອກຕຳແໜ່ງ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <select name="" id="" class="form-control">
+                                                        <select wire:model="positionId_sala" name="" id="" class="form-control @error('positionId_sala') is-invalid @enderror">
                                                             <option value="">ເລືອກ</option>
+                                                            @foreach($selectPositons as $valuepos)
+                                                            <option value="{{$valuepos->id}}"> {{$valuepos->name}}</option>
+                                                            @endforeach
                                                         </select>
+                                                        @error('positionId_sala')
+                                                        <span class="error text-danger">{{$message}}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row">
+                                                @push('scripts')
+                                                <script>
+                                                    $(document).ready(function() {
+                                                        $('.money').simpleMoneyFormat();
+                                                    });
+                                                </script>
+                                                @endpush
                                                 <div class="col-md-12">
-                                                    <label for="">ເງິນເດືອນ</label>
+                                                    <label for="">ເງິນເດືອນ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ຈຳນວນ">
+                                                        <input wire:model="amount_sala" type="text" class="form-control money @error('amount_sala') is-invalid @enderror" placeholder="0.00" onkeypress="validate(event)">
+                                                        @error('amount_sala')
+                                                        <span class="error text-danger">{{$message}}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -2018,8 +2033,8 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button type="button" class="btn btn-primary">ຣີເຊັດ</button>
-                                            <button type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
+                                            <button wire:click="resetFiledSalary()" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
+                                            <button wire:click="Store_Salary()" type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
                                         </div>
                                     </div>
                                 </div>
@@ -2032,7 +2047,12 @@
                                                 <h6><b>ຂໍ້ມູນເງີນເດືອນ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" placeholder="search...">
+                                                <select wire:model.live="search_position_sala" name="" id="" class="form-control">
+                                                    <option value="">ເລືອກຕຳແໜ່ງ</option>
+                                                    @foreach($selectPositons as $searchposit)
+                                                    <option value="{{$searchposit->id}}">{{$searchposit->name}}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -2048,17 +2068,23 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php $i = 1;@endphp
+                                                    @foreach($salaries as $item)
                                                     <tr class="text-center">
-                                                        <td>01</td>
-                                                        <td>ຂັບລົດ+ບັນຊີ</td>
-                                                        <td>2,500,000 ກີບ</td>
+                                                        <td>{{$i++}}</td>
                                                         <td>
-                                                            <a href="" class="mr-3"><i class="fa fa-edit"></i> edit</a>
-                                                            <a href="" class=""><i class="fa fa-trash text-red"></i> delete</a>
+                                                            {{!empty($item->position->name) ? $item->position->name : ''}}
+                                                        </td>
+                                                        <td>{{number_format($item->amount)}}</td>
+                                                        <td>
+                                                            <a href="#" wire:click="showEditSalary('{{$item->id}}')" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
+                                                            <a href="#" wire:click="showDetory_Salary('{{$item->id}}')" class="text-red"><i class="fa fa-trash"></i> ລືບ</a>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
+                                            {{$salaries->links()}}
                                         </div>
                                     </div>
                                 </div>
@@ -2069,6 +2095,27 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fabe" id="modal-manage-salary-information-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">ລືບຂໍ້ມູນເງິນເດືອນ</h4>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" wire:model="hiddenId_sala" hidden="{{$hiddenId_sala}}">
+                    <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button wire:click="get_backSalary()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_Salary()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- show ປະເພດການເຄື່ອນໄຫວຕຸກ -->
     <div wire:ignore.self class="modal fabe" id="modal-tuk-movement-type">
         <div class="modal-dialog modal-xl">
@@ -2090,10 +2137,14 @@
                                     <div class="card-body">
                                         <form>
                                             <div class="row">
+                                                <input type="hidden" wire:model="hiddenId_Movement" value="{{$hiddenId_Movement}}">
                                                 <div class="col-md-12">
-                                                    <label for="">ຊື່ ປະເພດ</label>
+                                                    <label for="">ຊື່ ປະເພດ <span class="text-danger">*</span></label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="ປະເພດ">
+                                                        <input wire:model="movement_name" type="text" class="form-control @error('movement_name') is-invalid @enderror" placeholder="ປະເພດ">
+                                                        @error('movement_name')
+                                                        <span class="error text-danger">{{$message}}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -2101,8 +2152,8 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between">
-                                            <button type="button" class="btn btn-primary">ຣີເຊັດ</button>
-                                            <button type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
+                                            <button wire:click="resetFiledTypeMovement()" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> ຣີເຊັດ</button>
+                                            <button wire:click="Store_TypeMovement()" type="button" class="btn btn-success"><i class="fa fa-download"></i> ບັນທືກ</button>
                                         </div>
                                     </div>
                                 </div>
@@ -2115,7 +2166,7 @@
                                                 <h6><b>ຂໍ້ມູນປະເພດການເຄື່ອນໄຫວຕຸກ</b></h6>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" placeholder="search...">
+                                                <input wire:model.live="search" type="text" class="form-control" placeholder="search...">
                                             </div>
                                         </div>
                                     </div>
@@ -2130,16 +2181,20 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php $i = 1;@endphp
+                                                    @foreach($typemovements as $item)
                                                     <tr class="text-center">
-                                                        <td>01</td>
-                                                        <td>ຕຸກຖອນ</td>
+                                                        <td>{{$i++}}</td>
+                                                        <td>{{$item->name}}</td>
                                                         <td>
-                                                            <a href="" class="mr-3"><i class="fa fa-edit"></i> edit</a>
-                                                            <a href="" class=""><i class="fa fa-trash text-red"></i> delete</a>
+                                                            <a href="#" wire:click="showEditTypeMovement('{{$item->id}}')" class="mr-3"><i class="fa fa-edit"></i> ແກ້ໄຂ</a>
+                                                            <a href="#" wire:click="showDetory_TypeMovement('{{$item->id}}')" class="text-red"><i class="fa fa-trash"></i> ລືບ</a>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
+                                            {{$typemovements->links()}}
                                         </div>
                                     </div>
                                 </div>
@@ -2150,7 +2205,28 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fabe" id="modal-tuk-movement-type-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">ລືບຂໍ້ມູນການເຄື່ອນໄຫວ</h4>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" wire:model="hiddenId_Movement" hidden="{{$hiddenId_Movement}}">
+                    <p class="text-center">ທ່ານຕ້ອງການລືບຂໍ້ມູນນີ້ ຫືຼ ບໍ? <i class="fa fa-trash text-danger"></i></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button wire:click="get_backTypeMovement()" class="btn btn-sm btn-primary">ກັບຄືນ</button>
+                    <button wire:click="delete_TypeMovement()" class="btn btn-sm btn-success">ຕົກລົງ</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 @push('scripts')
 
@@ -2403,12 +2479,24 @@
     window.addEventListener('hide-modal-manage-salary-information', event => {
         $('#modal-manage-salary-information').modal('hide');
     })
+    window.addEventListener('show-modal-manage-salary-information-delete', event => {
+        $('#modal-manage-salary-information-delete').modal('show');
+    })
+    window.addEventListener('hide-modal-manage-salary-information-delete', event => {
+        $('#modal-manage-salary-information-delete').modal('hide');
+    })
     // ປະເພດການເຄື່ອນໄຫວຕຸກ
     window.addEventListener('show-modal-tuk-movement-type', event => {
         $('#modal-tuk-movement-type').modal('show');
     })
     window.addEventListener('hide-modal-tuk-movement-type', event => {
         $('#modal-tuk-movement-type').modal('hide');
+    })
+    window.addEventListener('show-modal-tuk-movement-type-delete', event => {
+        $('#modal-tuk-movement-type-delete').modal('show');
+    })
+    window.addEventListener('hide-modal-tuk-movement-type-delete', event => {
+        $('#modal-tuk-movement-type-delete').modal('hide');
     })
 </script>
 @endpush

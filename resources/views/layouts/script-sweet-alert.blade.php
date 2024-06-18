@@ -127,7 +127,7 @@
 <script>
   document.addEventListener('already_data', function(e) {
     Swal.fire({
-      title: '@lang("lang.already_data")',
+      title: '@lang("ຂໍອະໄພ ຂໍ້ມູນນີ້ມີການໃຊ້ງານແລ້ວ")',
       icon: "error",
       iconColor: 'danger',
       timer: 3000,

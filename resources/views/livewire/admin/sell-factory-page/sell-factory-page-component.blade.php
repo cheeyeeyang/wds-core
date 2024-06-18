@@ -5,13 +5,13 @@
                 <div class="col-md-8">
                     <div class="row">
                         <div class="col-md-6">
-                            <button type="button" class="btn btn-info btn-block">
+                            <button wire:click="setIndex(0)" type="button" class="btn btn-info btn-block">
                                 <h4>ຂາຍໜ້າໂຮງງານ</h4>
                             </button>
                         </div>
 
                         <div class="col-md-6">
-                            <button wire:click="" type="button" class="btn btn-outline-info btn-block">
+                            <button wire:click="setIndex(1)" type="button" class="btn btn-outline-info btn-block">
                                 <h4>ຊຳລະໜີ້</h4>
                             </button>
                         </div>

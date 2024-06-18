@@ -5,7 +5,7 @@
                 <div class="col-md-12">
                     <div class="row mt-4">
                         <div class="col-md-12">
-                            <h4><b>ຈັດການຂໍ້ມູນຜູ້ໃຊ້</b></h4>
+                            <h4><b>ຈັດການຂໍ້ມູນໜ້າທີຜູ້ໃຊ້</b></h4>
                         </div>
                     </div>
 
@@ -42,7 +42,7 @@
                                 <div class="card-header">
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <h6><b>ຂໍ້ມູນລາຍຊື່ຜູ້ໃຊ້</b></h6>
+                                            <h6><b>ຂໍ້ມູນໜ້າທີຜູ້ໃຊ້ລະບົບ</b></h6>
                                         </div>
                                         <div class="col-md-5"></div>
                                         <div class="col-md-3">

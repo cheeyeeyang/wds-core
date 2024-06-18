@@ -10,11 +10,14 @@ use App\Models\TbPosition;
 use App\Models\TbPrice;
 use App\Models\TbProduct;
 use App\Models\TbProvince;
+use App\Models\TbSalary;
 use App\Models\TbScoreCriteria;
+use App\Models\TbTypeMovement;
 use App\Models\TbUnit;
 use App\Models\TbUserWaterline;
 use App\Models\TbVillage;
 use App\Models\TbWaterLine;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -39,6 +42,8 @@ class ManageBasicInfromatComponent extends Component
     public $district_name, $Dis_proId, $hiddenId_district;
     public $village_name, $Vill_disId, $selectDistrict = [], $selectVillage, $vill_proId, $hiddenId_village;
     public $criteria, $score, $hiddenId_scoreC;
+    public $amount_sala, $positionId_sala, $search_position_sala, $hiddenId_sala;
+    public $movement_name, $hiddenId_Movement;
     public function render()
     {
         $search = $this->search;
@@ -145,6 +150,21 @@ class ManageBasicInfromatComponent extends Component
                 ->orwhere('score', 'like', '%' . $this->search . '%');
         })->paginate(8);
 
+        $salaries = TbSalary::orderBy('id', 'desc');
+
+        if ($this->search_position_sala) {
+            $salaries = $salaries->where('position_id', $this->search_position_sala);
+        }
+        if (!empty($salaries)) {
+            $salaries = $salaries->paginate(8);
+        } else {
+            $salaries = [];
+        }
+
+        $typemovements = TbTypeMovement::orderBy('id', 'desc')->where(function ($q) {
+            $q->where('name', 'like', '%' . $this->search . '%');
+        })->paginate(8);
+
         return view('livewire.admin.manage-basic.manage-basic-infromat-component', compact(
             'units',
             'selectUnits',
@@ -168,6 +188,8 @@ class ManageBasicInfromatComponent extends Component
             'data_districts',
             'villages',
             'score_criterias',
+            'salaries',
+            'typemovements',
         ))->layout('layouts.base');
     }
 
@@ -352,6 +374,11 @@ class ManageBasicInfromatComponent extends Component
     // <!-- show-delete ຂໍ້ມູນຫົວໜ່ອຍ -->
     public function showDetory($ids)
     {
+        if (TbProduct::where('unit_id', $ids)->first()) {
+            $this->dispatch('already_data');
+            return;
+        }
+
         $this->dispatch('hide-modal-data-units');
         $this->dispatch('show-modal-data-units-delete');
         $show_delete = TbUnit::find($ids);
@@ -361,6 +388,7 @@ class ManageBasicInfromatComponent extends Component
     public function delete_Units()
     {
         $ids = $this->hiidenId_units;
+
         $delete_units = TbUnit::find($ids);
         $delete_units->delete();
         $this->resetFiledUnits();
@@ -439,6 +467,15 @@ class ManageBasicInfromatComponent extends Component
     // <!-- show-delete ຂໍ້ມູນຕຳແໜ່ງ -->
     public function showDetoryPosition($ids)
     {
+        if (TbSalary::where('position_id', $ids)->first()) {
+            $this->dispatch('already_data');
+            return;
+        }
+        if (TbEmployee::where('position_id', $ids)->first()) {
+            $this->dispatch('already_data');
+            return;
+        }
+
         $this->dispatch('hide-modal-data-position');
         $this->dispatch('show-modal-data-position-delete');
         $show_delete = TbPosition::find($ids);
@@ -448,6 +485,7 @@ class ManageBasicInfromatComponent extends Component
     public function delete_Position()
     {
         $ids = $this->hiidenId_position;
+
         $delete_position = TbPosition::find($ids);
         $delete_position->delete();
         $this->resetFiled_position();
@@ -546,6 +584,16 @@ class ManageBasicInfromatComponent extends Component
     // <!-- show-delete ຂໍ້ມູນພະນັກງານ -->
     public function showDetory_emplyee($ids)
     {
+        if (TbUserWaterline::where('employee_id', $ids)->first()) {
+            $this->dispatch('already_data');
+            return;
+        }
+        
+        if (User::where('employee_id', $ids)->first()) {
+            $this->dispatch('already_data');
+            return;
+        }
+
         $this->dispatch('hide-modal-data-staff');
         $this->dispatch('show-modal-data-staff-delete');
         $show_delete = TbEmployee::find($ids);
@@ -569,7 +617,7 @@ class ManageBasicInfromatComponent extends Component
     }
     // -- ========= end staff employee ========== -- //
 
-    // -- ========= add custoomer-branch ========== -- //
+    // -- ========= add customer-branch ========== -- //
     public function show_DataBranch_regularCustomer()
     {
         $this->dispatch('show-modal-data-branch-regular-customer');
@@ -582,7 +630,7 @@ class ManageBasicInfromatComponent extends Component
         $this->price_id = '';
         $this->details_branch = '';
     }
-    // add-edit ຂໍ້ມູນພະນັກງານ
+    // add-edit customer-branch
     public function Store_Branches()
     {
         $updateId = $this->hiidenId_branch;
@@ -650,7 +698,7 @@ class ManageBasicInfromatComponent extends Component
             }
         }
     }
-    // <!-- show-Edit ຂໍ້ມູນພະນັກງານ -->
+    // <!-- show-Edit customer-branch -->
     public function showEditbranches($ids)
     {
         $show_Edit_branch = TbBranch::find($ids);
@@ -660,7 +708,7 @@ class ManageBasicInfromatComponent extends Component
         $this->price_id = $show_Edit_branch->price_id;
         $this->details_branch = $show_Edit_branch->detail;
     }
-    // <!-- show-delete ຂໍ້ມູນພະນັກງານ -->
+    // <!-- show-delete customer-branch -->
     public function showDetory_branches($ids)
     {
         $this->dispatch('hide-modal-data-branch-regular-customer');
@@ -668,7 +716,7 @@ class ManageBasicInfromatComponent extends Component
         $show_delete = TbBranch::find($ids);
         $this->hiidenId_branch = $ids;
     }
-    // <!-- delete ຂໍ້ມູນພະນັກງານ -->
+    // <!-- delete customer-branch -->
     public function delete_Branches()
     {
         $ids = $this->hiidenId_branch;
@@ -764,6 +812,11 @@ class ManageBasicInfromatComponent extends Component
     // <!-- show-delete price -->
     public function showDetory_Prices($ids)
     {
+        if (TbBranch::where('price_id', $ids)->first()) {
+            $this->dispatch('already_data');
+            return;
+        }
+
         $this->dispatch('hide-modal-data-price');
         $this->dispatch('show-modal-data-price-delete');
         $show_delete = TbPrice::find($ids);
@@ -819,7 +872,7 @@ class ManageBasicInfromatComponent extends Component
         $this->cus_user_waterlineId = '';
         $this->cus_remark = '';
     }
-    // add-edit ຂໍ້ມູນພະນັກງານ
+    // add-edit customers
     public function Store_Customers()
     {
 
@@ -885,7 +938,7 @@ class ManageBasicInfromatComponent extends Component
             $this->dispatch('something_went_wrong');
         }
     }
-    // <!-- show-Edit ຂໍ້ມູນພະນັກງານ -->
+    // <!-- show-Edit customers -->
     public function showEditCustomers($ids)
     {
         $this->dispatch('show-modal-data-customer-add');
@@ -942,7 +995,7 @@ class ManageBasicInfromatComponent extends Component
             $this->dispatch('something_went_wrong');
         }
     }
-    // <!-- show-delete ຂໍ້ມູນພະນັກງານ -->
+    // <!-- show-delete customers -->
     public function showDetory_Customers($ids)
     {
         $this->dispatch('hide-modal-data-customer');
@@ -950,7 +1003,7 @@ class ManageBasicInfromatComponent extends Component
         $show_delete = TbCustomer::find($ids);
         $this->hiidenId_customer = $ids;
     }
-    // <!-- delete ຂໍ້ມູນພະນັກງານ -->
+    // <!-- delete customers -->
     public function delete_Customers()
     {
         $ids = $this->hiidenId_customer;
@@ -978,7 +1031,7 @@ class ManageBasicInfromatComponent extends Component
         $this->hiddenId_waterline = '';
         $this->waterline_name = '';
     }
-    // add-edit price
+    // add-edit ຂໍ້ມູນສາຍນໍ້າ
     public function Store_Waterline()
     {
         $updateId = $this->hiddenId_waterline;
@@ -1022,22 +1075,27 @@ class ManageBasicInfromatComponent extends Component
             }
         }
     }
-    // <!-- show-Edit price -->
+    // <!-- show-Edit ຂໍ້ມູນສາຍນໍ້າ -->
     public function showEditWaterline($ids)
     {
         $show_Edit_waterline = TbWaterLine::find($ids);
         $this->hiddenId_waterline = $ids;
         $this->waterline_name = $show_Edit_waterline->name;
     }
-    // <!-- show-delete price -->
+    // <!-- show-delete ຂໍ້ມູນສາຍນໍ້າ -->
     public function showDetory_Waterline($ids)
     {
+        if (TbUserWaterline::where('waterline_id', $ids)->first()) {
+            $this->dispatch('already_data');
+            return;
+        }
+
         $this->dispatch('hide-modal-data-water');
         $this->dispatch('show-modal-data-water-delete');
         $show_delete = TbWaterLine::find($ids);
         $this->hiddenId_waterline = $ids;
     }
-    // <!-- delete price -->
+    // <!-- delete ຂໍ້ມູນສາຍນໍ້າ -->
     public function delete_Waterline()
     {
         $ids = $this->hiddenId_waterline;
@@ -1066,7 +1124,7 @@ class ManageBasicInfromatComponent extends Component
         $this->userwaterline_employeeId = '';
         $this->waterline_waterlineId = '';
     }
-    // add-edit price
+    // add-edit ຂໍ້ມູນທີມສົ່ງນໍ້າ
     public function Store_Userwaterline()
     {
         $updateId = $this->hiddenId_userwaterline;
@@ -1120,7 +1178,7 @@ class ManageBasicInfromatComponent extends Component
             }
         }
     }
-    // <!-- show-Edit price -->
+    // <!-- show-Edit ຂໍ້ມູນທີມສົ່ງນໍ້າ -->
     public function showEditUserWaterline($ids)
     {
         $show_Edit_user_waterline = TbUserWaterline::find($ids);
@@ -1128,7 +1186,7 @@ class ManageBasicInfromatComponent extends Component
         $this->userwaterline_employeeId = $show_Edit_user_waterline->employee_id;
         $this->waterline_waterlineId = $show_Edit_user_waterline->waterline_id;
     }
-    // <!-- show-delete price -->
+    // <!-- show-delete ຂໍ້ມູນທີມສົ່ງນໍ້າ -->
     public function showDetory_UserWaterline($ids)
     {
         $this->dispatch('hide-modal-data-user-waterline');
@@ -1136,7 +1194,7 @@ class ManageBasicInfromatComponent extends Component
         $show_delete = TbUserWaterline::find($ids);
         $this->hiddenId_userwaterline = $ids;
     }
-    // <!-- delete price -->
+    // <!-- delete ຂໍ້ມູນທີມສົ່ງນໍ້າ -->
     public function delete_UserWaterline()
     {
         $ids = $this->hiddenId_userwaterline;
@@ -1219,7 +1277,7 @@ class ManageBasicInfromatComponent extends Component
             }
         }
     }
-    // <!-- show-Edit price -->
+    // <!-- show-Edit ຂໍ້ມູນບ້ານ -->
     public function showEditVillage($ids)
     {
         $show_Edit_Village = TbVillage::find($ids);
@@ -1227,7 +1285,7 @@ class ManageBasicInfromatComponent extends Component
         $this->village_name = $show_Edit_Village->village_name;
         $this->vill_proId = $show_Edit_Village->district_id;
     }
-    // <!-- show-delete price -->
+    // <!-- show-delete ຂໍ້ມູນບ້ານ -->
     public function showDetory_Village($ids)
     {
         $this->dispatch('hide-modal-village');
@@ -1235,7 +1293,7 @@ class ManageBasicInfromatComponent extends Component
         $show_delete = TbVillage::find($ids);
         $this->hiddenId_village = $ids;
     }
-    // <!-- delete price -->
+    // <!-- delete ຂໍ້ມູນບ້ານ -->
     public function delete_Village()
     {
         $ids = $this->hiddenId_village;
@@ -1316,7 +1374,7 @@ class ManageBasicInfromatComponent extends Component
             }
         }
     }
-    // <!-- show-Edit price -->
+    // <!-- show-Edit ຂໍ້ມູນເມືອງ -->
     public function showEditDistrict($ids)
     {
         $show_Edit_District = TbDistrict::find($ids);
@@ -1324,7 +1382,7 @@ class ManageBasicInfromatComponent extends Component
         $this->district_name = $show_Edit_District->district_name;
         $this->Dis_proId = $show_Edit_District->province_id;
     }
-    // <!-- show-delete price -->
+    // <!-- show-delete ຂໍ້ມູນເມືອງ -->
     public function showDetory_District($ids)
     {
         $this->dispatch('hide-modal-district');
@@ -1332,7 +1390,7 @@ class ManageBasicInfromatComponent extends Component
         $show_delete = TbDistrict::find($ids);
         $this->hiddenId_district = $ids;
     }
-    // <!-- delete price -->
+    // <!-- delete ຂໍ້ມູນເມືອງ -->
     public function delete_District()
     {
         $ids = $this->hiddenId_district;
@@ -1404,14 +1462,14 @@ class ManageBasicInfromatComponent extends Component
             }
         }
     }
-    // <!-- show-Edit price -->
+    // <!-- show-Edit ຂໍ້ມູນແຂວງ -->
     public function showEditProvince($ids)
     {
         $show_Edit_province = TbProvince::find($ids);
         $this->hiddenId_province = $ids;
         $this->province_name = $show_Edit_province->province_name;
     }
-    // <!-- show-delete price -->
+    // <!-- show-delete ຂໍ້ມູນແຂວງ -->
     public function showDetory_Province($ids)
     {
         $this->dispatch('hide-modal-province');
@@ -1419,7 +1477,7 @@ class ManageBasicInfromatComponent extends Component
         $show_delete = TbProvince::find($ids);
         $this->hiddenId_province = $ids;
     }
-    // <!-- delete price -->
+    // <!-- delete ຂໍ້ມູນແຂວງ -->
     public function delete_Province()
     {
         $ids = $this->hiddenId_province;
@@ -1501,7 +1559,7 @@ class ManageBasicInfromatComponent extends Component
             }
         }
     }
-    // <!-- show-Edit price -->
+    // <!-- show-Edit criteriascore -->
     public function showEditCriteriaScore($ids)
     {
         $show_Edit_Score_Cri = TbScoreCriteria::find($ids);
@@ -1509,7 +1567,7 @@ class ManageBasicInfromatComponent extends Component
         $this->criteria = $show_Edit_Score_Cri->criteria;
         $this->score = $show_Edit_Score_Cri->score;
     }
-    // <!-- show-delete price -->
+    // <!-- show-delete criteriascore -->
     public function showDetory_CriteriaScore($ids)
     {
         $this->dispatch('hide-modal-criteria-score');
@@ -1517,7 +1575,7 @@ class ManageBasicInfromatComponent extends Component
         $show_delete = TbScoreCriteria::find($ids);
         $this->hiddenId_scoreC = $ids;
     }
-    // <!-- delete price -->
+    // <!-- delete criteriascore -->
     public function delete_CriteriaScore()
     {
         $ids = $this->hiddenId_scoreC;
@@ -1533,16 +1591,193 @@ class ManageBasicInfromatComponent extends Component
         $this->dispatch('show-modal-criteria-score');
         $this->dispatch('hide-modal-criteria-score-delete');
     }
-    // -- ========= end ຂໍ້ມູນແຂວງ ========== -- //
+    // -- ========= end criteriascore ========== -- //
 
     // <!-- show ຂໍ້ມູນຈັດການຂໍ້ມູນເງີນເດືອນ -->
     public function show_ManageSalaryInformation()
     {
         $this->dispatch('show-modal-manage-salary-information');
     }
+    public function resetFiledSalary()
+    {
+        $this->amount_sala = '';
+        $this->positionId_sala = '';
+        $this->hiddenId_sala = '';
+    }
+    public function Store_Salary()
+    {
+        $updateId = $this->hiddenId_sala;
+
+        if ($updateId > 0) {
+
+            $this->validate([
+                'amount_sala' => 'required',
+                'positionId_sala' => 'required',
+            ], [
+                'amount_sala.required' => 'ກະລຸນາໃສ່ຈຳນວນເງິນກ່ອນ!',
+                'positionId_sala.required' => 'ກະລຸນາເລືອກຕຳແໜ່ງກ່ອນ!',
+            ]);
+
+            try {
+
+                $update_Salary = TbSalary::find($updateId);
+                $update_Salary->amount = str_replace(',', '', $this->amount_sala);
+                $update_Salary->position_id = $this->positionId_sala;
+
+                $update_Salary->update();
+                $this->resetFiledSalary();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'amount_sala' => 'required',
+                'positionId_sala' => 'required',
+            ], [
+                'amount_sala.required' => 'ກະລຸນາໃສ່ຈຳນວນເງິນກ່ອນ!',
+                'positionId_sala.required' => 'ກະລຸນາເລືອກຕຳແໜ່ງກ່ອນ!',
+            ]);
+
+            try {
+                $add_Salary = new TbSalary();
+
+                if (str_replace(',', '', $this->amount_sala)) {
+                    $add_Salary->amount = str_replace(',', '', $this->amount_sala);
+                }
+                if ($this->positionId_sala) {
+                    $add_Salary->position_id = $this->positionId_sala;
+                }
+
+                $add_Salary->save();
+                $this->resetFiledSalary();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit ຂໍ້ມູນຈັດການຂໍ້ມູນເງີນເດືອນ -->
+    public function showEditSalary($ids)
+    {
+        $show_Edit_Salary = TbSalary::find($ids);
+        $this->hiddenId_sala = $ids;
+        $this->amount_sala = $show_Edit_Salary->amount;
+        $this->positionId_sala = $show_Edit_Salary->position_id;
+    }
+    // <!-- show-delete ຂໍ້ມູນຈັດການຂໍ້ມູນເງີນເດືອນ -->
+    public function showDetory_Salary($ids)
+    {
+        $this->dispatch('hide-modal-manage-salary-information');
+        $this->dispatch('show-modal-manage-salary-information-delete');
+        $show_delete = TbSalary::find($ids);
+        $this->hiddenId_sala = $ids;
+    }
+    // <!-- delete ຂໍ້ມູນຈັດການຂໍ້ມູນເງີນເດືອນ -->
+    public function delete_Salary()
+    {
+        $ids = $this->hiddenId_sala;
+        $delete_S = TbSalary::find($ids);
+        $delete_S->delete();
+        $this->resetFiledProvince();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-manage-salary-information-delete');
+        $this->dispatch('show-modal-manage-salary-information');
+    }
+    public function get_backSalary()
+    {
+        $this->dispatch('show-modal-manage-salary-information');
+        $this->dispatch('hide-modal-manage-salary-information-delete');
+    }
+    // -- ========= end salary ========== -- //
+
     // <!-- show ຂໍ້ມູນປະເພດການເຄື່ອນໄຫວຕຸກ -->
     public function show_TukMoventType()
     {
         $this->dispatch('show-modal-tuk-movement-type');
     }
+    public function resetFiledTypeMovement()
+    {
+        $this->movement_name = '';
+        $this->hiddenId_Movement = '';
+    }
+    public function Store_TypeMovement()
+    {
+        $updateId = $this->hiddenId_Movement;
+
+        if ($updateId > 0) {
+
+            $this->validate([
+                'movement_name' => 'required',
+            ], [
+                'movement_name.required' => 'ກະລຸນາໃສ່ຊື່ກ່ອນ!',
+            ]);
+
+            try {
+
+                $update_type = TbTypeMovement::find($updateId);
+                $update_type->name = $this->movement_name;
+
+                $update_type->update();
+                $this->resetFiledTypeMovement();
+                $this->dispatch('edit');
+            } catch (\Exception $e) {
+                $this->dispatch('something_went_wrong');
+            }
+        } else {
+
+            $this->validate([
+                'movement_name' => 'required',
+            ], [
+                'movement_name.required' => 'ກະລຸນາໃສ່ຊື່ກ່ອນ!',
+            ]);
+
+            try {
+                $add_type = new TbTypeMovement();
+
+                if ($this->movement_name) {
+                    $add_type->name = $this->movement_name;
+                }
+
+                $add_type->save();
+                $this->resetFiledTypeMovement();
+                $this->dispatch('add');
+            } catch (\Exception $ex) {
+                $this->dispatch('something_went_wrong');
+            }
+        }
+    }
+    // <!-- show-Edit ຂໍ້ມູນປະເພດການເຄື່ອນໄຫວຕຸກ -->
+    public function showEditTypeMovement($ids)
+    {
+        $show_Edit_Salary = TbTypeMovement::find($ids);
+        $this->hiddenId_Movement = $ids;
+        $this->movement_name = $show_Edit_Salary->name;
+    }
+    // <!-- show-delete ຂໍ້ມູນປະເພດການເຄື່ອນໄຫວຕຸກ -->
+    public function showDetory_TypeMovement($ids)
+    {
+        $this->dispatch('hide-modal-tuk-movement-type');
+        $this->dispatch('show-modal-tuk-movement-type-delete');
+        $show_delete = TbTypeMovement::find($ids);
+        $this->hiddenId_Movement = $ids;
+    }
+    // <!-- delete ຂໍ້ມູນປະເພດການເຄື່ອນໄຫວຕຸກ -->
+    public function delete_TypeMovement()
+    {
+        $ids = $this->hiddenId_Movement;
+        $delete_S = TbTypeMovement::find($ids);
+        $delete_S->delete();
+        $this->resetFiledProvince();
+        $this->dispatch('delete');
+        $this->dispatch('hide-modal-tuk-movement-type-delete');
+        $this->dispatch('show-modal-tuk-movement-type');
+    }
+    public function get_backTypeMovement()
+    {
+        $this->dispatch('show-modal-tuk-movement-type');
+        $this->dispatch('hide-modal-tuk-movement-type-delete');
+    }
+    // -- ========= end ຂໍ້ມູນປະເພດການເຄື່ອນໄຫວຕຸກ ========== -- //
 }

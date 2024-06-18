@@ -102,7 +102,7 @@
                         </div>
                         <div class="card-footer">
                             <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-light">ກັບຄືນ</button>
+                                <button type="button" class="btn btn-outline-light text-dark">ກັບຄືນ</button>
                                 <button type="button" class="btn btn-outline-light text-dark">ຕໍ່ໄປ</button>
                             </div>
                         </div>
