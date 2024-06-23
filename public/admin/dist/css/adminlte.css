@@ -52986,6 +52986,22 @@ a.text-muted:hover {
   color: #6c757d;
 }
 
+/* .container-couter-image {
+   display: flex;
+} */
+/* .show-image-buy {
+  position: relative;
+  padding: 0px;
+  margin-bottom: 20px;
+}
+.show-image-buy img {
+  width: 100%;
+} */
+/* .show-image-buy .pation {
+   margin: 7px;
+   text-align: center;
+} */
+
 .dark-mode .accent-gray-dark [class*="sidebar-dark-"] .sidebar a:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link) {
   color: #c2c7d0;
 }

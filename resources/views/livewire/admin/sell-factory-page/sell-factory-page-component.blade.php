@@ -16,47 +16,42 @@
                             </button>
                         </div>
                     </div>
-                    <!-- search -->
-                    <div class="row mt-3">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" placeholder="search...">
-                        </div>
-                        <div class="col-md-8"></div>
-                    </div>
-
                     <!-- card-product -->
-                    <div class="row mt-3">
-                        <div class="col-md-4">
-                            <div class="card">
-                                <div class="container">
-                                    <img src="" alt="">
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" placeholder="search...">
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card">
-                                <div class="container">
-                                    <img src="" alt="">
+                                <div class="col-md-8"></div>
+                                @foreach($products as $item)
+                                <div class="col-sx-18 col-sm-6 col-md-4 mt-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="show-image-buy text-center">
+                                                <div class="card" style="border: 5px; color: secondary;">
+                                                    <img src="{{ asset('image/water.jpg') }}" alt="" class="mx-auto d-block" style="width: 100px;">
+                                                </div>
+                                                <div class="pation">
+                                                    <h6>{{$item->product_name}}</h6>
+                                                    <h6 class="text-primary"> ລາຄາ: {{number_format($item->price_cost)}} ₭</h6>
+                                                    <p class="holder"><a href="#" class="btn btn-primary btn-block"><i class="fa fa-shopping-cart"></i> ຊື້ເລີຍ</a></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                @endforeach
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card">
-                                <div class="container">
-                                    <img src="" alt="">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-
                         </div>
                     </div>
+                   
                 </div>
 
                 <!--add to card-->
                 <div class="col-md-4">
                     <div class="card">
-                        <div class="card-body bg-light">
+                        <div class="card-header bg-light">
                             <div class="row">
                                 <div class="col-md-12">
                                     <h5 style="border-radius: 20%;" class="text-center"><b>ລວມໃບບິນ</b></h5>
@@ -64,7 +59,7 @@
                             </div>
                         </div>
 
-                        <div class="card-header">
+                        <div class="card-body">
                             <div class="row">
                                 <div class="col-md-2">
                                     <p>ວັນທີ</p>
@@ -202,7 +197,7 @@
                                                 <td>ນໍ້າຕຸກໃຫ່ຍ 18ລີດ : 244</td>
                                                 <td>150,000</td>
                                                 <td>
-                                                   <button type="button" class="btn btn-primary btn-sm">ລາຍລະອຽດ</button>
+                                                    <button type="button" class="btn btn-primary btn-sm">ລາຍລະອຽດ</button>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -215,7 +210,7 @@
                                                 <td>ນໍ້າຕຸກໃຫ່ຍ 18ລີດ : 244</td>
                                                 <td>150,000</td>
                                                 <td>
-                                                   <button type="button" class="btn btn-primary btn-sm">ລາຍລະອຽດ</button>
+                                                    <button type="button" class="btn btn-primary btn-sm">ລາຍລະອຽດ</button>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -226,7 +221,7 @@
                                                 <td></td>
                                             </tr>
                                             <tr>
-                                                
+
                                             </tr>
                                         </tbody>
                                     </table>
