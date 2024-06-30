@@ -111,9 +111,9 @@
 </script>
 {{-- =================================== password_not_match ======================================= --}}
 <script>
-  document.addEventListener('password_not_match', function(e) {
+  document.addEventListener('out_of_stock', function(e) {
     Swal.fire({
-      title: "@lang('lang.password_not_match')",
+      title: "@lang('ສິນຄ້າໝົດແລ້ວ')",
       icon: "warning",
       iconColor: 'danger',
       timer: 3000,

@@ -16,6 +16,34 @@
                             </button>
                         </div>
                     </div>
+                    <style>
+                        .shiayang {
+                            overflow-y: auto;
+                            max-height: 60vh;
+                        }
+
+                        .shiayang::-webkit-scrollbar {
+                            width: 0px;
+                        }
+
+                        @media (max-width: 580px) {
+
+                            .scroll-shiayang-box {
+                                grid-template-columns: repeat(3, 1fr);
+                            }
+
+                            .shiayang {
+                                margin-top: -2rem;
+                                overflow-y: auto;
+                                max-height: 60vh;
+                            }
+
+                            /* #pos-content {
+                                height: 90vh;
+                            } */
+                        }
+                    </style>
+
                     <!-- card-product -->
                     <div class="card mt-3">
                         <div class="card-body">
@@ -24,8 +52,10 @@
                                     <input type="text" class="form-control" placeholder="search...">
                                 </div>
                                 <div class="col-md-8"></div>
+                            </div>
+                            <div class=" row shiayang scroll-shiayang-box mt-3">
                                 @foreach($products as $item)
-                                <div class="col-sx-18 col-sm-6 col-md-4 mt-3">
+                                <div class="col-sx-14 col-sm-6 col-md-4 mt-3">
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="show-image-buy text-center">
@@ -35,7 +65,7 @@
                                                 <div class="pation">
                                                     <h6>{{$item->product_name}}</h6>
                                                     <h6 class="text-primary"> ລາຄາ: {{number_format($item->price_cost)}} ₭</h6>
-                                                    <p class="holder"><a href="#" class="btn btn-primary btn-block"><i class="fa fa-shopping-cart"></i> ຊື້ເລີຍ</a></p>
+                                                    <p class="holder"><a href="#" wire:click="addToCart(' {{$item->id}} ')" class="btn btn-primary btn-sm btn-block"> ເພີ່ມ</a></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -45,7 +75,7 @@
                             </div>
                         </div>
                     </div>
-                   
+
                 </div>
 
                 <!--add to card-->
@@ -61,15 +91,18 @@
 
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-2">
+                                <div class="col-md-6">
                                     <p>ວັນທີ</p>
                                 </div>
-                                <div class="col-md-7"></div>
-                                <div class="col-md-3 text-right">
-                                    <p>3/4/224</p>
+                                <div class="col-md-6 text-right">
+                                    <p>
+                                        @php echo date("d/m/Y") @endphp
+                                    </p>
                                 </div>
                                 <!--  -->
                             </div>
+                            <br>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <p> ນໍ້າຕຸກໃຫ່ຍ 18ລີດ</p>
@@ -80,8 +113,6 @@
                                 <div class="col-md-4 text-right">
                                     <p><b> 100,000,000</b></p>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-6">
                                     <p> ນໍ້າຕຸກໃຫ່ຍ 18ລີດ</p>
                                 </div>
@@ -93,6 +124,8 @@
                                 </div>
                             </div>
                             <!--  -->
+                            
+                            <br>
                             <div class="row">
                                 <div class="col-md-7">
                                     <h6><b>ຍອດລວມທັງໝົດ :</b></h6>
